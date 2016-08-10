@@ -1,0 +1,189 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{geometry}
+\usepackage{url}
+\geometry{a4paper}
+\geometry{margin=1in}
+
+\usepackage[sorting=none, backend=bibtex]{biblatex}
+\usepackage{filecontents}
+\usepackage{tabularx}
+
+\def\etal{\emph{et al}.\ }
+\newcommand{\CPP}
+{C\nolinebreak[4]\hspace{-.05em}\raisebox{.22ex}{\footnotesize\bf ++\ }}
+
+\begin{filecontents}{proposal-references.bib}
+
+@inproceedings{le2014distributed,
+  title={Distributed Representations of Sentences and Documents.},
+  author={Le, Quoc V and Mikolov, Tomas},
+  booktitle={ICML},
+  volume={14},
+  pages={1188--1196},
+  year={2014}
+}
+
+@article{lau2016empirical,
+  title={An Empirical Evaluation of doc2vec with Practical Insights into Document Embedding Generation},
+  author={Lau, Jey Han and Baldwin, Timothy},
+  journal={arXiv preprint arXiv:1607.05368},
+  year={2016}
+}
+
+@article{mikolov2013efficient,
+  title={Efficient estimation of word representations in vector space},
+  author={Mikolov, Tomas and Chen, Kai and Corrado, Greg and Dean, Jeffrey},
+  journal={arXiv preprint arXiv:1301.3781},
+  year={2013}
+}
+
+ @misc{wikidatadump2016,
+   author="Meta",
+   title="Data dump torrents --- Meta{,} discussion about Wikimedia projects",
+   year="2016",
+   url={https://meta.wikimedia.org/w/index.php?title=Data_dump_torrents},
+   note="[Online; accessed 9-August-2016]"
+ }
+
+@inproceedings{broder1997resemblance,
+  title={On the resemblance and containment of documents},
+  author={Broder, Andrei Z},
+  booktitle={Compression and Complexity of Sequences 1997. Proceedings},
+  pages={21--29},
+  year={1997},
+  organization={IEEE}
+}
+
+@misc{googlegroups2015,
+  title={Google Groups},
+  url={https://groups.google.com/d/msg/word2vec-toolkit/q49firnoqro/bp--14e4unwj},
+  journal={Google Groups}
+}
+
+@misc{chromium2016,
+  title={Git repositories on chromium},
+  url={https://chromium.googlesource.com/},
+  journal={chromium Git repositories}
+}
+
+@article{maaten2008visualizing,
+  title={Visualizing data using t-SNE},
+  author={Maaten, Laurens van der and Hinton, Geoffrey},
+  journal={Journal of Machine Learning Research},
+  volume={9},
+  number={Nov},
+  pages={2579--2605},
+  year={2008}
+}
+@InProceedings{maas2011,
+  author    = {Maas, Andrew L.  and  Daly, Raymond E.  and  Pham, Peter T.  and  Huang, Dan  and  Ng, Andrew Y.  and  Potts, Christopher},
+  title     = {Learning Word Vectors for Sentiment Analysis},
+  booktitle = {Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies},
+  month     = {June},
+  year      = {2011},
+  address   = {Portland, Oregon, USA},
+  publisher = {Association for Computational Linguistics},
+  pages     = {142--150},
+  url       = {http://www.aclweb.org/anthology/P11-1015}
+}
+
+\end{filecontents}
+\addbibresource{proposal-references.bib}
+
+
+\title {
+  \Huge Mining Big Data Project Proposal\\
+  \vspace{1em}
+  \huge Investigating Paragraph Vectors
+}
+
+\author {
+  \begin{tabular}{r l}
+  a1632538 & Zachary Forman\\
+  a1646930 & James Caddy\\
+  \end{tabular}
+}
+
+\begin{document}
+
+% Cover Page
+\pagenumbering{gobble}
+\maketitle
+\newpage
+
+\section*{Topic}
+  We seek to investigate the use of the dimensionality reduction technique
+  of \textit{Paragraph Vectors}~\cite{le2014distributed}, also known as
+  \texttt{doc2vec}~\cite{lau2016empirical} for use in document similarity
+  algorithms and understanding source code.\\
+  We seek to achieve three goals:
+  \begin{enumerate}
+    \item Replicate the results claimed by Le and Mikolov in their $2014$
+          paper~\cite{le2014distributed}.
+    \item Compare \texttt{doc2vec} backed with k-nearest-neighbours with
+          standard approaches to determining document similarity
+          ~\cite{broder1997resemblance}.
+    \item Apply \texttt{doc2vec} to source code, which has never been done
+          before, and explore how it distributes code segments.
+  \end{enumerate}
+
+\section*{Data Sources}
+  Le and Mikolov's original paper shows the most pronounced results on Maas'
+  IMDB dataset~\cite{maas2011}. We therefore seek to use this dataset to
+  reproduce Le and Mikolov's claims.
+  It consists of $100000$ reviews, where $25000$ of them are labelled for
+  training, $25000$ of them are labelled for test and $50000$ are unlabelled,
+  but usable for unsupervised training.
+  For English language documents, we plan to use a standard datasource used to
+  train and evaluate both \texttt{word2vec} and \texttt{doc2vec}
+  ~\cite{lau2016empirical, mikolov2013efficient}, the data dump of all English
+  Wikipedia articles~\cite{wikidatadump2016}.
+  This dump is around 50GB uncompressed, consisting of approximately 5 million
+  articles and 3 billion words.
+  For source code, we plan to use the Chromium repository~\cite{chromium2016}.
+  This repository contains over 7 million lines of \CPP source code, and over
+  $1.5$ million lines of comments.
+
+\section*{Goals}
+  \begin{itemize}
+    \item To reproduce Le and Mikolov's results, we expect to see $92\%$ test
+          accuracy ~\cite{le2014distributed} on the sentiment analysis task for
+          the IMDB dataset.
+    \item From the Wikipedia datasource, we intend to perform the following
+          experiments:
+          \begin{itemize}
+            \item Use t-sne~\cite{maaten2008visualizing} to visualize Wikipedia
+                  articles, and see if patterns based on e.g. article category
+                  can be seen.
+            \item Compare the similarities found by the w-shingles algorithm
+                  with min-hashing to the similarities found by our
+                  \texttt{doc2vec} based approach.
+          \end{itemize}
+    \item From the Chromium datasource, we intend to perform the following
+          experiments:
+          \begin{itemize}
+            \item Use t-sne~\cite{maaten2008visualizing} to visualize code
+                  snippets, and see if the resulting pattern has human
+                  relevant meaning.
+            \item Compare the document vectors for code snippets and their
+                  associated comment blocks, and see if they are closely
+                  related.
+          \end{itemize}
+  \end{itemize}
+\section*{Contributions}
+This research project will have the following contributions:
+\begin{itemize}
+  \item Replication of a relatively recent paper that makes some contested
+        claims~\cite{googlegroups2015}.
+  \item Implementation and analysis of a novel method based on the
+        \texttt{doc2vec} algorithm for analysing document similarity.
+  \item Application of the \texttt{doc2vec} algorithm to a novel
+        domain -- source code.
+\end{itemize}
+
+\printbibliography
+
+
+\end{document}
