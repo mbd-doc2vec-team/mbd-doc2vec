@@ -1,0 +1,120 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage{hyperref}
+\geometry{a4paper}
+\geometry{margin=1in}
+
+\usepackage[sorting=none, backend=bibtex]{biblatex}
+\usepackage{filecontents}
+\usepackage{tabularx}
+
+\def\etal{\emph{et al}.\ }
+\newcommand{\CPP}
+{C\nolinebreak[4]\hspace{-.05em}\raisebox{.22ex}{\footnotesize\bf ++\ }}
+
+\begin{filecontents}{proposal-references.bib}
+@misc{wikidatadump2016,
+  author="Meta",
+  title="Data dump torrents --- Meta{,} discussion about Wikimedia projects",
+  year="2016",
+  url={https://meta.wikimedia.org/w/index.php?title=Data_dump_torrents},
+  note="[Online; accessed 9-August-2016]"
+}
+
+@misc{chromium2016,
+  title={Git repositories on chromium},
+  url={https://chromium.googlesource.com/},
+  journal={chromium Git repositories}
+}
+
+@InProceedings{maas2011,
+  author    = {Maas, Andrew L.  and  Daly, Raymond E.  and  Pham, Peter T.  and  Huang, Dan  and  Ng, Andrew Y.  and  Potts, Christopher},
+  title     = {Learning Word Vectors for Sentiment Analysis},
+  booktitle = {Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies},
+  month     = {June},
+  year      = {2011},
+  address   = {Portland, Oregon, USA},
+  publisher = {Association for Computational Linguistics},
+  pages     = {142--150},
+  url       = {http://www.aclweb.org/anthology/P11-1015}
+}
+\end{filecontents}
+\addbibresource{proposal-references.bib}
+
+
+\title {
+  \Huge Mining Big Data - Data Collection Report\\
+  \vspace{1em}
+  \huge Investigating Paragraph Vectors
+}
+
+\author {
+  \begin{tabular}{r l}
+  a1632538 & Zachary Forman\\
+  a1646930 & James Caddy\\
+  \end{tabular}
+}
+
+\begin{document}
+
+% Cover Page
+\pagenumbering{gobble}
+\maketitle
+\newpage
+
+\section*{Data Sources}
+  As we discussed in our proposal, we will use three primary data sources.
+  Firstly, we use Maas' IMDB set\\ % JCAD this is all you
+  Secondly, we used The Wikimedia Foundation's English Wikipedia data dump
+  ~\cite{wikidatadump2016} as a source for English language documents. We
+  downloaded the full wiki dump from \url{https://dumps.wikimedia.org/enwiki/20160820/}.\\
+  Lastly, we used The Chromium Project's Chromium repository~\cite{chromium2016}
+  as a source for source code documents. We cloned the repository at revision
+  \href{https://github.com/nwjs/chromium.src/commit/4fe31bb06cf458234d7017950a8b2b82427487c8}
+       {4fe31bb06cf458234d7017950a8b2b82427487c8}.
+\section*{Data Scale}
+  \begin{table}[h]
+    \begin{minipage}{.5\linewidth}
+      \begin{tabular}{r l}
+        \multicolumn{2}{c}{\large \textbf{IMDB Dataset}}\\
+        \hline
+        \ldots & \ldots\\
+      \end{tabular}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{tabular}{r l}
+        \multicolumn{2}{c}{\large \textbf{Chromium Codebase}}\\
+        \hline
+        Size & $2688525849$B ($2.6$GB)\\
+        Files & $245004$ ($245$M)\\
+        C \& \CPP files & $23674$ ($23$M)\\
+        Lines of Code & $4851267$ (4.85M)\\
+        Comments & $608975$ ($608$k)\\
+      \end{tabular}
+    \end{minipage}
+  \end{table}
+
+  \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{r l}
+        \multicolumn{2}{c}{\large \textbf{English Wikipedia}}\\
+        \hline
+        Compressed Size & $14054466197$B ($13$GB)\\
+        Uncompressed Size & $58392156024$B ($55$GB)\\
+        Pages (including redirects) & $16824195$ ($16$M)\\
+        Documents (excluding meta pages) & $5219884$ (5M)\\
+        Words (only including user visible words) & 4004090340 (4B)\\
+      \end{tabular}
+    \end{center}
+  \end{table}
+
+\section*{Data Processing \& Storage}
+
+\section*{Generating Similar Data}
+
+\printbibliography
+
+
+\end{document}
