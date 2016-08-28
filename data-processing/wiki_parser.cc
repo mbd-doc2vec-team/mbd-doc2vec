@@ -129,9 +129,6 @@ std::string ProcessText(const uint8_t *text_start, const uint8_t *text_end)
       } else if (eq(std::string(text_start, text_start+4), "quot")) {
         text += "'";
         text_start += 4;
-      } else {
-        std::cout << "Looking at " << std::string(text_start, text_start+5) << std::endl;
-        exit(1);
       }
     } else if (eq(std::string(text_start, text_start+6), "[http:")) {
       text_start += 6;
@@ -149,8 +146,8 @@ std::string ProcessText(const uint8_t *text_start, const uint8_t *text_end)
   while (it < text.end()) {
     if (*it == '<') {
       it++;
-      if (eq(std::string(it, it+3), "ref")) {
-        it += 3;
+      if (eq(std::string(it, it+4), "ref>")) {
+        it += 4;
         while (*it != '<') it++;
       }
       while (*it != '>') it++;
@@ -168,10 +165,29 @@ std::string ProcessText(const uint8_t *text_start, const uint8_t *text_end)
         while (*cat_it != '|' && *cat_it != ']') cat_it++;
         std::string interior_text(it+11, cat_it);
         while (*cat_it != ']') cat_it++;
-        it = cat_it+2;
+        it = cat_it+1;
         cleaned_text += "[[" + interior_text + "]]";
-      } else {
-
+      } else if (eq(std::string(it, it+11), "[[:category:")) {
+        auto cat_it = it+12;
+        while (*cat_it != '|' && *cat_it != ']') cat_it++;
+        std::string interior_text(it+12, cat_it);
+        while (*cat_it != ']') cat_it++;
+        it = cat_it+1;
+        cleaned_text += "[[" + interior_text + "]]";
+      } else if (eq(std::string(it, it+2), "[[")) {
+        auto fit = it+2;
+        while (std::isalpha(*fit) || *fit == '-') fit++;
+        if (*fit == ':') {
+          while (*fit != ']') fit++;
+          fit++;
+        } else {
+          fit = it+2;
+          while (*fit != '|' && *fit != ']') fit++;
+          cleaned_text += "[[";
+          if (*fit == '|') {
+            it = fit;
+          }
+        }
       }
     } else if (*it == '|') {
       it++;
@@ -188,13 +204,63 @@ std::string ProcessText(const uint8_t *text_start, const uint8_t *text_end)
           it = number_it+2;
         }
       }
+    } else if (*it == '{') {
+      it++;
+      if (*it == '{') {
+        while (*it != '}') it++;
+        it++;
+      } else {
+        while (*it != '}') it++;
+      }
     } else {
       cleaned_text += *it;
     }
     it++;
   }
 
-  return cleaned_text;
+  // Finally, clean up extraneous characters.
+  std::string final_text;
+  it = cleaned_text.begin();
+
+  while (it < cleaned_text.end()) {
+    if (*it == '&') {
+      while (*it != ';' && std::isalnum(*it)) it++;
+    } else if (std::isdigit(*it)) {
+      // TODO(ZacharyForman): Turn these into proper text?
+      switch (*it) {
+        case '0': final_text += " zero "; break;
+        case '1': final_text += " one "; break;
+        case '2': final_text += " two "; break;
+        case '3': final_text += " three "; break;
+        case '4': final_text += " four "; break;
+        case '5': final_text += " five "; break;
+        case '6': final_text += " six "; break;
+        case '7': final_text += " seven "; break;
+        case '8': final_text += " eight "; break;
+        case '9': final_text += " nine "; break;
+      }
+    } else if (std::isalpha(*it)) {
+      final_text += std::tolower(*it);
+    } else if (std::isspace(*it)) {
+      final_text += *it;
+    } else {
+      final_text += ' ';
+    }
+    it++;
+  }
+
+  // Trim off excess space
+  int r = 0, w = 0;
+  while (r < final_text.size()) {
+    while (r < final_text.size() && std::isspace(final_text[r])) r++;
+    while (r < final_text.size() && !std::isspace(final_text[r])) {
+      final_text[w++] = final_text[r++];
+    }
+    final_text[w++] = ' ';
+  }
+  final_text.resize(w);
+
+  return final_text;
 }
 
 #define FIND(str) \
@@ -245,11 +311,11 @@ void ReadAndWriteArticles(const File &xml, const std::string &dir)
     if (!GoodTitle(title)) continue;
     std::string file_path(id_start, id_end);
     file_paths << file_path << "\t" << title << std::endl;
+
     std::string article_text = ProcessText(text_start, text_end);
-    std::cout << article_text << std::endl;
-    return;
-    //std::ofstream f(dir + "/" + file_path, std::ios_base::trunc);
-    //f << article_text;
+
+    std::ofstream f(dir + "/" + file_path, std::ios_base::trunc);
+    f << article_text;
   }
 }
 
