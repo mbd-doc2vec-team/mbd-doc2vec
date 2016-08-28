@@ -101,16 +101,20 @@
 
 \subsection*{Data Sources}
   As we discussed in our proposal, we will use three primary data sources.
-  Firstly, we use Maas' IMDB set~\cite{maas2011} ((jcad))\\
-  Secondly, we used The Wikimedia Foundation's English Wikipedia data dump
-  ~\cite{wikidatadump2016} as a source for English language documents. We
-  downloaded the full wiki dump from \url{https://dumps.wikimedia.org/enwiki/20160820/}.\\
+  Firstly, we use Maas' IMDB set~\cite{maas2011} for verification and English
+  language documents which can be found at
+  \url{http://ai.stanford.edu/~amaas/data/sentiment/}.
+  Secondly, we used The Wikimedia Foundation's English Wikipedia data
+  dump~\cite{wikidatadump2016} as a source for English language documents. We
+  downloaded the full wiki dump from \url{https://dumps.wikimedia.org/enwiki/20160820/}.
   Lastly, we used The Chromium Project's Chromium repository~\cite{chromium2016}
   as a source for source code documents. We cloned the repository at revision
   \href{https://github.com/nwjs/chromium.src/commit/4fe31bb06cf458234d7017950a8b2b82427487c8}
        {4fe31bb06cf458234d7017950a8b2b82427487c8}.
 \subsection*{Data Scale}
-  The IMDB dataset... ((jcad))\\
+  The IMDB dataset contains a total of 100,000 files. Half are labelled as either a
+  positive or negative reviews, and the remainder are unlabelled. It is 346MB in size
+  and contains 23 million words, from a vocabulary of 90 thousand words.\\
   The English Wikipedia Dataset is a single XML file, 13GB compressed and
   55GB uncompressed. It contains 16 million pages, however this includes
   redirects and meta-pages such as categories and portals, and therefore only
@@ -122,7 +126,7 @@
 \subsection*{Storage Format}
   The fundamental requirements for the \texttt{doc2vec}~\cite{le2014distributed}
   algorithm to work are that each document can be associated with the words in the
-  document, and that words in each document are just a string of words, i.e. no
+  document, and that words in each document are just a series of words, i.e. no
   excess punctuation or markup.\\
   The simplest way to meet these requirements is to store the data as a series of
   files, one per document, such that each file is named with the document's ID, and
@@ -135,7 +139,9 @@
   To transform the data into the format previously described, some data processing
   is required. All programs required to transform the datasets are available at
   \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/tree/master/data-processing}.\\
-  The IMDB dataset... ((jcad))\\
+  The IMDB dataset needed minimal processing. The bulk of the work had already been
+  performed by the authors of the dataset. Additionally, punctuation, symbols and
+  elements of markup were removed.\\
   The Wikipedia dataset required extensive pre-processing, with each document
   needing to be parsed from the XML, and the plain text extracted from the wiki markup.
   Additionally, ``fake" documents (e.g. portals, category pages) were removed.\\
