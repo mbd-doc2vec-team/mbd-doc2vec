@@ -142,15 +142,15 @@
   The Chromium codebase required some pre-processing as well, with \CPP files being
   extracted, the directory tree being flattened and the tokens extracted from each file.
 \subsection*{Generating Similar Data}
-  Given the plethora of sources of natural language data, data generation isn't a high
+  Given the plethora of sources of natural language data, data generation is not a high
   priority for us. Perhaps more importantly, simply duplicating given data is a known
   method for increasing the relevance of smaller documents, so to evaluate performance
   on larger datasets we can apply that technique. Despite these reservations, there are
   several promising ways to generate more data. Recurrent Neural Networks (RNNs) show
   great potential as a generative model (that differs from the word vector model used
   in \texttt{doc2vec}) of natural language and source code~\cite{rnn2015}. Similarly,
-  Markov chains~\cite{shannon2001mathematical} provide a method of generating more data that
-  retains many of the statistical properties of the original corpus.
+  Markov chains~\cite{shannon2001mathematical} provide a method of generating more data
+  that retains many of the statistical properties of the original corpus.
 
 \newpage
 \printbibliography
