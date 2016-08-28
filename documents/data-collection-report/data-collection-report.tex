@@ -65,11 +65,15 @@
   journal={The Unreasonable Effectiveness of Recurrent Neural Networks}
 }
 
-@book{gilks2005markov,
-  title={Markov chain monte carlo},
-  author={Gilks, Walter R},
-  year={2005},
-  publisher={Wiley Online Library}
+@article{shannon2001mathematical,
+  title={A mathematical theory of communication},
+  author={Shannon, Claude Elwood},
+  journal={ACM SIGMOBILE Mobile Computing and Communications Review},
+  volume={5},
+  number={1},
+  pages={3--55},
+  year={2001},
+  publisher={ACM}
 }
 \end{filecontents}
 \addbibresource{proposal-references.bib}
@@ -129,7 +133,7 @@
   nodes.
 \subsection*{Data Processing}
   To transform the data into the format previously described, some data processing
-  is required. We have uploaded any programs written to transform the data to
+  is required. All programs required to transform the datasets are available at
   \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/tree/master/data-processing}.\\
   The IMDB dataset... ((jcad))\\
   The Wikipedia dataset required extensive pre-processing, with each document
@@ -145,7 +149,7 @@
   several promising ways to generate more data. Recurrent Neural Networks (RNNs) show
   great potential as a generative model (that differs from the word vector model used
   in \texttt{doc2vec}) of natural language and source code~\cite{rnn2015}. Similarly,
-  Markov chains~\cite{gilks2005markov} provide a method of generating more data that
+  Markov chains~\cite{shannon2001mathematical} provide a method of generating more data that
   retains many of the statistical properties of the original corpus.
 
 \newpage
