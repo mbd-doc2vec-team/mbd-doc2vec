@@ -4,7 +4,7 @@
 \usepackage{url}
 \usepackage{hyperref}
 \geometry{a4paper}
-\geometry{margin=1in}
+\geometry{margin=0.75in}
 
 \usepackage[sorting=none, backend=bibtex]{biblatex}
 \usepackage{filecontents}
@@ -40,6 +40,37 @@
   pages     = {142--150},
   url       = {http://www.aclweb.org/anthology/P11-1015}
 }
+
+@inproceedings{le2014distributed,
+  title={Distributed Representations of Sentences and Documents.},
+  author={Le, Quoc V and Mikolov, Tomas},
+  booktitle={ICML},
+  volume={14},
+  pages={1188--1196},
+  year={2014}
+}
+
+@inproceedings{shvachko2010hadoop,
+  title={The hadoop distributed file system},
+  author={Shvachko, Konstantin and Kuang, Hairong and Radia, Sanjay and Chansler, Robert},
+  booktitle={2010 IEEE 26th symposium on mass storage systems and technologies (MSST)},
+  pages={1--10},
+  year={2010},
+  organization={IEEE}
+}
+
+@misc{rnn2015,
+  title={The Unreasonable Effectiveness of Recurrent Neural Networks},
+  url={https://karpathy.github.io/2015/05/21/rnn-effectiveness/},
+  journal={The Unreasonable Effectiveness of Recurrent Neural Networks}
+}
+
+@book{gilks2005markov,
+  title={Markov chain monte carlo},
+  author={Gilks, Walter R},
+  year={2005},
+  publisher={Wiley Online Library}
+}
 \end{filecontents}
 \addbibresource{proposal-references.bib}
 
@@ -64,9 +95,9 @@
 \maketitle
 \newpage
 
-\section*{Data Sources}
+\subsection*{Data Sources}
   As we discussed in our proposal, we will use three primary data sources.
-  Firstly, we use Maas' IMDB set\\ % JCAD this is all you
+  Firstly, we use Maas' IMDB set~\cite{maas2011} ((jcad))\\
   Secondly, we used The Wikimedia Foundation's English Wikipedia data dump
   ~\cite{wikidatadump2016} as a source for English language documents. We
   downloaded the full wiki dump from \url{https://dumps.wikimedia.org/enwiki/20160820/}.\\
@@ -74,46 +105,50 @@
   as a source for source code documents. We cloned the repository at revision
   \href{https://github.com/nwjs/chromium.src/commit/4fe31bb06cf458234d7017950a8b2b82427487c8}
        {4fe31bb06cf458234d7017950a8b2b82427487c8}.
-\section*{Data Scale}
-  \begin{table}[h]
-    \begin{minipage}{.5\linewidth}
-      \begin{tabular}{r l}
-        \multicolumn{2}{c}{\large \textbf{IMDB Dataset}}\\
-        \hline
-        \ldots & \ldots\\
-      \end{tabular}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{tabular}{r l}
-        \multicolumn{2}{c}{\large \textbf{Chromium Codebase}}\\
-        \hline
-        Size & $2688525849$B ($2.6$GB)\\
-        Files & $245004$ ($245$M)\\
-        C \& \CPP files & $23674$ ($23$M)\\
-        Lines of Code & $4851267$ (4.85M)\\
-        Comments & $608975$ ($608$k)\\
-      \end{tabular}
-    \end{minipage}
-  \end{table}
+\subsection*{Data Scale}
+  The IMDB dataset... ((jcad))\\
+  The English Wikipedia Dataset is a single XML file, 13GB compressed and
+  55GB uncompressed. It contains 16 million pages, however this includes
+  redirects and meta-pages such as categories and portals, and therefore only
+  5 million of these are useful as documents. Excluding markup, this dataset contains
+  approximately 4 billion words.\\
+  The Chromium codebase is 2.6GB in size, and contains $245$ thousand files.
+  Of these, $23$ thousand are C and \CPP files, which contain $4.8$ million lines of
+  code and $608$ thousand lines of comments.
+\subsection*{Storage Format}
+  The fundamental requirements for the \texttt{doc2vec}~\cite{le2014distributed}
+  algorithm to work are that each document can be associated with the words in the
+  document, and that words in each document are just a string of words, i.e. no
+  excess punctuation or markup.\\
+  The simplest way to meet these requirements is to store the data as a series of
+  files, one per document, such that each file is named with the document's ID, and
+  consists of a series of space separated tokens (words, in the case of English data,
+  and code tokens in the case of code data). This advantage, while simple, scales
+  well in the distributed case, with distributed filesystems like hdfs~\cite{shvachko2010hadoop}
+  providing an easy - and efficient - way to make stored data available over multiple
+  nodes.
+\subsection*{Data Processing}
+  To transform the data into the format previously described, some data processing
+  is required. We have uploaded any programs written to transform the data to
+  \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/tree/master/data-processing}.\\
+  The IMDB dataset... ((jcad))\\
+  The Wikipedia dataset required extensive pre-processing, with each document
+  needing to be parsed from the XML, and the plain text extracted from the wiki markup.
+  Additionally, ``fake" documents (e.g. portals, category pages) were removed.\\
+  The Chromium codebase required some pre-processing as well, with \CPP files being
+  extracted, the directory tree being flattened and the tokens extracted from each file.
+\subsection*{Generating Similar Data}
+  Given the plethora of sources of natural language data, data generation isn't a high
+  priority for us. Perhaps more importantly, simply duplicating given data is a known
+  method for increasing the relevance of smaller documents, so to evaluate performance
+  on larger datasets we can apply that technique. Despite these reservations, there are
+  several promising ways to generate more data. Recurrent Neural Networks (RNNs) show
+  great potential as a generative model (that differs from the word vector model used
+  in \texttt{doc2vec}) of natural language and source code~\cite{rnn2015}. Similarly,
+  Markov chains~\cite{gilks2005markov} provide a method of generating more data that
+  retains many of the statistical properties of the original corpus.
 
-  \begin{table}[h]
-    \begin{center}
-      \begin{tabular}{r l}
-        \multicolumn{2}{c}{\large \textbf{English Wikipedia}}\\
-        \hline
-        Compressed Size & $14054466197$B ($13$GB)\\
-        Uncompressed Size & $58392156024$B ($55$GB)\\
-        Pages (including redirects) & $16824195$ ($16$M)\\
-        Documents (excluding meta pages) & $5219884$ (5M)\\
-        Words (only including user visible words) & 4004090340 (4B)\\
-      \end{tabular}
-    \end{center}
-  \end{table}
-
-\section*{Data Processing \& Storage}
-
-\section*{Generating Similar Data}
-
+\newpage
 \printbibliography
 
 
