@@ -266,12 +266,10 @@ std::string ProcessText(const uint8_t *text_start, const uint8_t *text_end)
 #define FIND(str) \
   std::search(buf, buf_end, std::begin(str), std::end(str), comp)
 
-void ReadAndWriteArticles(const File &xml, const std::string &dir)
+void ReadAndWriteArticles(const File &xml)
 {
   const uint8_t *buf = xml.buffer();
   const uint8_t *buf_end = buf + xml.size();
-
-  std::ofstream file_paths("article-filepaths.txt", std::ios_base::trunc);
 
   while (buf < buf_end) {
     const uint8_t *page_start = FIND(kPageBegin) + sizeof(kPageBegin);
@@ -310,12 +308,10 @@ void ReadAndWriteArticles(const File &xml, const std::string &dir)
     std::string title = ProcessTitle(title_start, title_end);
     if (!GoodTitle(title)) continue;
     std::string file_path(id_start, id_end);
-    file_paths << file_path << "\t" << title << std::endl;
 
     std::string article_text = ProcessText(text_start, text_end);
 
-    std::ofstream f(dir + "/" + file_path, std::ios_base::trunc);
-    f << article_text;
+    std::cout << title << '.' << file_path << ' ' << article_text << '\n';
   }
 }
 
@@ -324,5 +320,5 @@ void ReadAndWriteArticles(const File &xml, const std::string &dir)
 int main(int argc, char **argv)
 {
   std::ios_base::sync_with_stdio(false);
-  ReadAndWriteArticles(File(argv[1]), argv[2]);
+  ReadAndWriteArticles(File(argv[1]));
 }
