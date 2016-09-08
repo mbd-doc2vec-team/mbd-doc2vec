@@ -337,7 +337,7 @@ std::string ProcessText(const uint8_t * __restrict__ text_start,
 #define FIND(str) \
   std::search(buf, buf_end, std::begin(str), std::end(str), comp)
 
-void ReadAndWriteArticles(const File &xml)
+void ReadAndWriteArticles(const File &xml, bool docs = true)
 {
   const uint8_t *buf = xml.buffer();
   const uint8_t *buf_end = buf + xml.size();
@@ -382,7 +382,11 @@ void ReadAndWriteArticles(const File &xml)
 
     std::string article_text = ProcessText(text_start, text_end);
 
-    std::cout << title << '.' << file_path << ' ' << article_text << '\n';
+    if (docs) {
+      std::cout << title << '.' << file_path << ' ' << article_text << '\n';
+    } else {
+      std::cout << article_text;
+    }
   }
 }
 
@@ -391,5 +395,9 @@ void ReadAndWriteArticles(const File &xml)
 int main(int argc, char **argv)
 {
   std::ios_base::sync_with_stdio(false);
-  ReadAndWriteArticles(File(argv[1]));
+  bool doc = false;
+  if (argc > 2 && std::string(argv[1]) == "--doc") {
+    doc = true;
+  }
+  ReadAndWriteArticles(File(argv[1]), argv[2]);
 }
