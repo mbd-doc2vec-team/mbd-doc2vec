@@ -342,6 +342,12 @@ void ReadAndWriteArticles(const File &xml, bool docs = true)
   const uint8_t *buf = xml.buffer();
   const uint8_t *buf_end = buf + xml.size();
 
+  std::ofstream titles;
+
+  if (docs) {
+    titles.open("document-labels.txt");
+  }
+
   while (buf < buf_end) {
     const uint8_t *page_start = FIND(kPageBegin) + sizeof(kPageBegin);
     buf = page_start;
@@ -383,7 +389,8 @@ void ReadAndWriteArticles(const File &xml, bool docs = true)
     std::string article_text = ProcessText(text_start, text_end);
 
     if (docs) {
-      std::cout << title << '.' << file_path << ' ' << article_text << '\n';
+      std::cout << article_text << '\n';
+      titles << title << "." << file_path << '\n';
     } else {
       std::cout << article_text;
     }
@@ -396,8 +403,8 @@ int main(int argc, char **argv)
 {
   std::ios_base::sync_with_stdio(false);
   bool doc = false;
-  if (argc > 2 && std::string(argv[1]) == "--doc") {
+  if (argc > 2 && std::string(argv[2]) == "--doc") {
     doc = true;
   }
-  ReadAndWriteArticles(File(argv[1]), argv[2]);
+  ReadAndWriteArticles(File(argv[1]), doc);
 }
