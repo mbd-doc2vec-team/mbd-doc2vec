@@ -3,6 +3,9 @@
 \usepackage{geometry}
 \usepackage{url}
 \usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
 \geometry{a4paper}
 \geometry{margin=0.75in}
 
@@ -48,18 +51,24 @@
 }
 
 @inproceedings{gensim,
-      title = {{Software Framework for Topic Modelling with Large Corpora}},
-      author = {Radim {\v R}eh{\r u}{\v r}ek and Petr Sojka},
-      booktitle = {{Proceedings of the LREC 2010 Workshop on New
-           Challenges for NLP Frameworks}},
-      pages = {45--50},
-      year = 2010,
-      month = May,
-      day = 22,
-      publisher = {ELRA},
-      address = {Valletta, Malta},
-      note={\url{http://is.muni.cz/publication/884893/en}},
-      language={English}
+  title = {{Software Framework for Topic Modelling with Large Corpora}},
+  author = {Radim {\v R}eh{\r u}{\v r}ek and Petr Sojka},
+  booktitle = {{Proceedings of the LREC 2010 Workshop on New
+       Challenges for NLP Frameworks}},
+  pages = {45--50},
+  year = 2010,
+  month = May,
+  day = 22,
+  publisher = {ELRA},
+  address = {Valletta, Malta},
+  note={\url{http://is.muni.cz/publication/884893/en}},
+  language={English}
+}
+
+@misc{chromium2016,
+  title={Git repositories on chromium},
+  url={https://chromium.googlesource.com/},
+  journal={chromium Git repositories}
 }
 
 @InProceedings{maas2011,
@@ -72,6 +81,16 @@
   publisher = {Association for Computational Linguistics},
   pages     = {142--150},
   url       = {http://www.aclweb.org/anthology/P11-1015}
+}
+
+@article{maaten2008visualizing,
+  title={Visualizing data using t-SNE},
+  author={Maaten, Laurens van der and Hinton, Geoffrey},
+  journal={Journal of Machine Learning Research},
+  volume={9},
+  number={Nov},
+  pages={2579--2605},
+  year={2008}
 }
 
 \end{filecontents}
@@ -119,8 +138,8 @@
     the paper~\cite{le2014distributed}. So far the results are disappointing.
     Despite several attempts to replicate the paper's experiment, and obtain
     a working sentiment classifier, so far, we have not come close to achieving
-    the accuracy described in the paper, or achieved by approaches. So far,
-    only an accuracy of 0.68 has been obtained, in contrast with the 92\% claimed
+    the accuracy described in the paper, or achieved by other approaches. So far,
+    only an accuracy of 68\% has been obtained, in contrast with the 92\% claimed
     by Le and Mikolov.
 
   \subsection*{Work on the Wikipedia dataset}
@@ -156,7 +175,21 @@
     large effects on accuracy.
 
   \subsection*{Experiments on the Wikipedia Dataset}
-    % TODO
+    Similarly to the IMDB dataset, we
+
+  \begin{table*}
+    \begin{center}
+      \begin{tabular}{l l l}
+        Parameter & IMBD model & Wikipedia model\\
+        \hline
+        Vector size & 200 & 200\\
+        Context distance & 5 & 8\\
+        Training iterations & 20 & 2\\
+      \end{tabular}
+    \caption{Parameters used for \texttt{doc2vec} for each experiment}
+    \label{tab:params}
+    \end{center}
+  \end{table*}
 
 \section*{Future Work}
   \subsection*{IMDB Dataset}
@@ -173,13 +206,109 @@
     a goal for our next experiments.
 
   \subsection*{Wikipedia Dataset}
-    % TODO
+    The most pressing, and most time-consuming, future work for the Wikipedia dataset
+    is to train the model for more generations. While the word vectors and document
+    vectors were somewhat coherent, there was clearly noise caused by under-fitting.
+    While training for 20 generations will take $1000$ CPU hours, the benefits of
+    training for a significant number of iterations should be worthwhile.\\
+    After this, we will compare the similarity metric that can be obtained using
+    \texttt{doc2vec} with those obtained from the k-shingles method, particularly
+    with intent to quantitatively compare the speed of finding similar documents, and
+    qualitatively assess how well the similarity metric compares to a human notion of
+    similarity.
 
   \subsection*{Chromium Dataset}
     % TODO
 
 \newpage
+
 \printbibliography
+
+\section*{Appendices}
+
+  \begin{table*}[h]
+    \begin{center}
+      \begin{tabular}{l l}
+        Wikipedia model & IMBD model\\
+        \hline
+        apricot & kahuna\\
+        cherry & mines\\
+        onion & interpreters\\
+        mango & explosive\\
+        persimmon & imperialist\\
+        indigo & catholic\\
+        hazelnut & conservatory\\
+        pomegranate & pilling\\
+        yahoo & craftsmanship\\
+        ibm & casing\\
+      \end{tabular}
+    \caption{Words similar to `apple'}
+    \label{tab:apple}
+    \end{center}
+  \end{table*}
+
+  \begin{table*}[h]
+    \begin{center}
+      \begin{tabular}{l l}
+        Wikipedia model & IMBD model\\
+        \hline
+        screwball & screwball\\
+        slapstick & slapstick\\
+        erotic & romance\\
+        modernist & stand-up\\
+        realist & slap-stick\\
+        satirical & physical\\
+        absurdist & teen\\
+        bromantic & sophisticated\\
+        improvisational & erotic\\
+        surreal & frothy\\
+      \end{tabular}
+    \caption{Words similar to `romantic'}
+    \label{tab:romantic}
+    \end{center}
+  \end{table*}
+
+  \begin{figure}[h]
+    \begin{center}
+      \tcbox{\includegraphics[width=0.7\linewidth]{mining-vs-science.png}}
+    \end{center}
+    \caption{t-sne~\cite{maaten2008visualizing} used to visualize
+             mining (red) and science (blue) wikipedia pages.
+             Concepts such as `School of Geological Sciences' are nearer
+             the meeting point of the groups.}
+    \label{fig:mvs}
+  \end{figure}
+
+  \begin{figure}[h]
+    \begin{center}
+      \tcbox{\includegraphics[width=0.7\linewidth]{years_in_science_cluster.png}}
+      \tcbox{\includegraphics[width=0.7\linewidth]{mining_in_region_cluster.png}}
+      \tcbox{\includegraphics[width=0.7\linewidth]{scifi_cluster.png}}
+    \end{center}
+    \caption{Some conceptual clusters from Figure~\ref{fig:mvs}.}
+    \label{fig:mvssub}
+  \end{figure}
+
+  \begin{figure}[h]
+    \begin{center}
+      \tcbox{\includegraphics[width=0.7\linewidth]{ast.png}}
+    \end{center}
+    \caption{t-sne~\cite{maaten2008visualizing} used to visualize
+             autism (red), terrorism (blue) and schizo.* (blue)
+             Wikipedia pages. Note how autism and schizophrenia are
+             clustered together, in the top right.}
+    \label{fig:ast}
+  \end{figure}
+
+  \begin{figure}[h]
+    \begin{center}
+      \tcbox{\includegraphics[width=0.7\linewidth]{autism_cluster.png}}
+      \tcbox{\includegraphics[width=0.7\linewidth]{schizothorax_cluster.png}}
+      \tcbox{\includegraphics[width=0.7\linewidth]{schizo_cluster.png}}
+    \end{center}
+    \caption{Some conceptual clusters from Figure~\ref{fig:ast}.}
+    \label{fig:mvssub}
+  \end{figure}
 
 
 \end{document}
