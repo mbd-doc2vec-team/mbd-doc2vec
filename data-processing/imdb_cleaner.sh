@@ -1,14 +1,23 @@
 #!/bin/bash
 # Point at IMDB dump directory
 
-mkdir -p $1/processed/test/
-mkdir -p $1/processed/train/
+mkdir -p $1/processed/test
+mkdir -p $1/processed/train
 
-declare -a arr=("/test/pos/" "/test/neg/" "/train/pos/" "/train/neg/" "/train/unsup/")
+declare -a type=("test" "train")
+declare -a label=("pos" "neg")
 
-for i in "${arr[@]}"
-do
-    cp -r "$1/$i" "$1/processed/$i"
-    sed -i 's/<br \/>//g' "$1/processed/$i/"*
-    sed -i 's/[^a-zA-Z0-9 \-]//g' "$1/processed/$i/"*
+for i in "${type[@]}"; do
+    for j in "${label[@]}"; do
+        cp -r $1/$i/$j $1/processed/$i
+        perl -C -pe 's/<br \/>/ /g' -i $1/processed/$i/$j/*
+        perl -C -pe "s/[^\w'\-]+/ /g" -i $1/processed/$i/$j/*
+        perl -C -pe "s/'//g" -i $1/processed/$i/$j/*
+    done
 done
+
+cp -r $1/train/unsup $1/processed/train
+perl -C -pe 's/<br \/>/ /g' -i $1/processed/train/unsup/*
+perl -C -pe "s/[^\w'\-]+/ /g" -i $1/processed/train/unsup/*
+perl -C -pe "s/'//g" -i $1/processed/train/unsup/*
+
