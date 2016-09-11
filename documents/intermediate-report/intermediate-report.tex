@@ -119,7 +119,8 @@
 
 \section*{Introduction}
   This document describes our progress towards achieving our project goals.
-  We have three primary project goals:
+  We have three primary project goals, the first and second of which our
+  current work has focused on:
   \begin{enumerate}
     \item Replicate the results claimed by Le and Mikolov in their $2014$
           paper~\cite{le2014distributed}.
@@ -129,7 +130,6 @@
     \item Apply \texttt{\texttt{doc2vec}} to source code, and explore how it distributes
           code segments.
   \end{enumerate}
-  Our work so far has mostly been towards the first and second of these goals.
 
 \section*{Current Progress}
   \subsection*{Work on the IMDB dataset}
@@ -175,21 +175,32 @@
     large effects on accuracy.
 
   \subsection*{Experiments on the Wikipedia Dataset}
-    Similarly to the IMDB dataset, we
-
-  \begin{table*}
-    \begin{center}
-      \begin{tabular}{l l l}
-        Parameter & IMBD model & Wikipedia model\\
-        \hline
-        Vector size & 200 & 200\\
-        Context distance & 5 & 8\\
-        Training iterations & 20 & 2\\
-      \end{tabular}
-    \caption{Parameters used for \texttt{doc2vec} for each experiment}
-    \label{tab:params}
-    \end{center}
-  \end{table*}
+    Similarly to the IMDB dataset, we trained \texttt{doc2vec} on the Wikipedia
+    dataset. Due to the sheer size of the dataset, this was a lengthy process, with
+    a single iteration taking in excess of 50 hours of CPU time. As a result (and due
+    to numerous issues with disk space and memory consumption leading to crashes
+    during model serialization) we only trained for 2 iterations of the Wikipedia
+    dataset. We used the parameters in Table~\ref{tab:params} for training.\\
+    Once we had trained word and document vectors, we performed some qualitative
+    analysis. First, we compared the distribution of vectors in the trained Wikipedia
+    model and the trained IMDB model. We did this by finding the vectors closest to
+    a given seed word. Generally the wikipedia dataset, despite the smaller number of
+    iterations, had better performance, as can be seen in Tables~\ref{tab:apple} and
+    ~\ref{tab:romantic}. This can likely be attributed to the much broader text corpus
+    offered by Wikipedia, with concepts such as Apple as a company as opposed to apple
+    as a fruit being unavailable in the movie-focused IMDB source.\\
+    Secondly, we evaluated the distribution of vectors internally by finding the nearest
+    neighbors to some specific documents. An example of this can be seen in
+    Table~\ref{tab:xkcd}, where we find that the closest documents to the wikipedia page
+    for \texttt{xkcd} include other web-comics `MS Paint Adventures', `Penny Arcade' and
+    `ctrl+alt+delete'.\\
+    Finally, we plotted the word vectors for some subsets of articles (since there are
+    far too many to plot them all) using t-SNE~\cite{maaten2008visualizing}.
+    A selection of these plots can be seen in the appendices
+    (Figures~\ref{fig:mvs}-\ref{fig:astsub}). The salient feature of these plots was that
+    the encapsulated conceptual relationships that have meaning to humans - for example,
+    in Figure~\ref{fig:mvssub}, it's clear that related concepts are tightly clustered.
+    This reflects the algorithm's success in learning document level concepts.
 
 \section*{Future Work}
   \subsection*{IMDB Dataset}
@@ -225,6 +236,20 @@
 \printbibliography
 
 \section*{Appendices}
+
+  \begin{table*}[h]
+    \begin{center}
+      \begin{tabular}{l l l}
+        Parameter & IMBD model & Wikipedia model\\
+        \hline
+        Vector size & 200 & 200\\
+        Context distance & 5 & 8\\
+        Training iterations & 20 & 2\\
+      \end{tabular}
+    \caption{Parameters used for \texttt{doc2vec} for each experiment}
+    \label{tab:params}
+    \end{center}
+  \end{table*}
 
   \begin{table*}[h]
     \begin{center}
@@ -268,6 +293,23 @@
     \end{center}
   \end{table*}
 
+  \begin{table*}[h]
+    \begin{center}
+      \begin{tabular}{l l}
+        Page name & Cosine similarity\\
+        \hline
+        randall munroe & 0.517820239067\\
+        ms paint adventures & 0.443829506636\\
+        time (xkcd)  & 0.440876543522\\
+        penny arcade & 0.424748897552\\
+        alexey pajitnov & 0.424251556396\\
+        ctrl+alt+del (webcomic)  & 0.423852056265\\
+      \end{tabular}
+    \caption{Wikipedia pages most similar to XKCD}
+    \label{tab:xkcd}
+    \end{center}
+  \end{table*}
+
   \begin{figure}[h]
     \begin{center}
       \tcbox{\includegraphics[width=0.7\linewidth]{mining-vs-science.png}}
@@ -307,7 +349,7 @@
       \tcbox{\includegraphics[width=0.7\linewidth]{schizo_cluster.png}}
     \end{center}
     \caption{Some conceptual clusters from Figure~\ref{fig:ast}.}
-    \label{fig:mvssub}
+    \label{fig:astsub}
   \end{figure}
 
 
