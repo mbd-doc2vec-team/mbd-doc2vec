@@ -1,0 +1,237 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\geometry{a4paper}
+\geometry{margin=1in}
+
+\usepackage[sorting=none, backend=bibtex]{biblatex}
+\usepackage{filecontents}
+\usepackage{tabularx}
+
+\def\etal{\emph{et al}.\ }
+\newcommand{\CPP}
+{C\nolinebreak[4]\hspace{-.05em}\raisebox{.22ex}{\footnotesize\bf ++\ }}
+
+\begin{filecontents}{final-report-references.bib}
+
+@inproceedings{le2014distributed,
+  title={Distributed Representations of Sentences and Documents.},
+  author={Le, Quoc V and Mikolov, Tomas},
+  booktitle={ICML},
+  volume={14},
+  pages={1188--1196},
+  year={2014}
+}
+
+@misc{wikidatadump2016,
+  author="Meta",
+  title="Data dump torrents --- Meta{,} discussion about Wikimedia projects",
+  year="2016",
+  url={https://meta.wikimedia.org/w/index.php?title=Data_dump_torrents},
+  note="[Online; accessed 9-August-2016]"
+}
+
+@inproceedings{broder1997resemblance,
+  title={On the resemblance and containment of documents},
+  author={Broder, Andrei Z},
+  booktitle={Compression and Complexity of Sequences 1997. Proceedings},
+  pages={21--29},
+  year={1997},
+  organization={IEEE}
+}
+
+@misc{keras,
+  title={Keras: Deep Learning library for Theano and TensorFlow},
+  url={https://keras.io/}
+}
+
+@inproceedings{gensim,
+  title = {{Software Framework for Topic Modelling with Large Corpora}},
+  author = {Radim {\v R}eh{\r u}{\v r}ek and Petr Sojka},
+  booktitle = {{Proceedings of the LREC 2010 Workshop on New
+       Challenges for NLP Frameworks}},
+  pages = {45--50},
+  year = 2010,
+  month = May,
+  day = 22,
+  publisher = {ELRA},
+  address = {Valletta, Malta},
+  note={\url{http://is.muni.cz/publication/884893/en}},
+  language={English}
+}
+
+@misc{chromium2016,
+  title={Git repositories on chromium},
+  url={https://chromium.googlesource.com/},
+  journal={chromium Git repositories}
+}
+
+@InProceedings{maas2011,
+  author    = {Maas, Andrew L.  and  Daly, Raymond E.  and  Pham, Peter T.  and  Huang, Dan  and  Ng, Andrew Y.  and  Potts, Christopher},
+  title     = {Learning Word Vectors for Sentiment Analysis},
+  booktitle = {Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies},
+  month     = {June},
+  year      = {2011},
+  address   = {Portland, Oregon, USA},
+  publisher = {Association for Computational Linguistics},
+  pages     = {142--150},
+  url       = {http://www.aclweb.org/anthology/P11-1015}
+}
+
+@article{maaten2008visualizing,
+  title={Visualizing data using t-SNE},
+  author={Maaten, Laurens van der and Hinton, Geoffrey},
+  journal={Journal of Machine Learning Research},
+  volume={9},
+  number={Nov},
+  pages={2579--2605},
+  year={2008}
+}
+
+\end{filecontents}
+\addbibresource{final-report-references.bib}
+
+
+\title {
+  \Huge Mining Big Data - Final Report\\
+  \vspace{1em}
+  \huge Investigating Paragraph Vectors
+}
+
+\author {
+  \begin{tabular}{r l}
+  a1632538 & Zachary Forman\\
+  a1646930 & James Caddy\\
+  \end{tabular}
+}
+
+\begin{document}
+
+% Cover Page
+\pagenumbering{gobble}
+\maketitle
+\newpage
+
+\section*{Introduction}
+
+\subsection*{Paragraph Vectors}
+
+\subsection*{Motivation}
+
+\section*{Data Collection}
+
+\subsection*{Data Sources}
+We used three sources of data. Firstly, we use Maas' IMDB set~\cite{maas2011}
+for verification and English language documents which can be found at
+\url{http://ai.stanford.edu/~amaas/data/sentiment/}. Secondly, we used The
+Wikimedia Foundation's English Wikipedia data dump~\cite{wikidatadump2016} as
+a source for English language documents. We downloaded the full wiki dump from
+\url{https://dumps.wikimedia.org/enwiki/20160820/}. Lastly, we used The
+Chromium Project's Chromium repository~\cite{chromium2016} as a source for
+source code documents. We cloned the repository at revision
+\href{https://github.com/nwjs/chromium.src/commit/4fe31bb06cf458234d7017950a8b2b82427487c8}
+{4fe31bb06cf458234d7017950a8b2b82427487c8}.
+
+\subsection*{Data Scale}
+The IMDB dataset contains a total of 100,000 files. Half are labelled as either a
+positive or negative reviews, and the remainder are unlabelled. It is 346MB in size
+and contains 23 million words, from a vocabulary of 90 thousand words.\\
+The English Wikipedia Dataset is a single XML file, 13GB compressed and
+55GB uncompressed. It contains 16 million pages, however this includes
+redirects and meta-pages such as categories and portals, and therefore only
+5 million of these are useful as documents. Excluding markup, this dataset contains
+approximately 4 billion words.\\
+The Chromium codebase is 2.6GB in size, and contains $245$ thousand files.
+Of these, $23$ thousand are C and \CPP files, which contain $4.8$ million lines of
+code and $608$ thousand lines of comments.
+
+\subsection*{Data Format}
+The fundamental requirements for the \texttt{doc2vec}~\cite{le2014distributed}
+algorithm to work are that each document can be associated with the words in the
+document, and that words in each document are just a series of words, i.e. no
+excess punctuation or markup.\\
+This requirement can easily be met by storing our set of documents as a newline
+separated list of space separated tokens. The following example shows how a
+simple document set might be transformed into this file format:\\
+$$ \{\text{``My cow was sick, but now it is better."},
+    \text{``Apples are nice.",
+    \text{``Amazing results!"}}\} $$\\
+Convert all text to lowercase and remove all punctuation:\\
+$$ \{\text{``my cow was sick but now it is better"},
+    \text{``apples are nice",
+    \text{``amazing results"}}\} $$\\
+Concatenate documents, separated by newlines:\\
+\begin{align*}&\texttt{my cow was sick but now it is better}\\
+&\texttt{apples are nice}\\
+&\texttt{amazing results}\\\end{align*}
+This format is simple to produce, simple to parse, and - given that the
+\texttt{doc2vec} algorithm needs to process every word anyway - is efficient
+to read. Perhaps more importantly, especially for large datasets like the
+Chromium dataset, this storage format has no storage requirements in excess
+of just the raw text in the files.
+
+\subsection*{Data Processing}
+To transform the data into the format previously described, some data processing
+is required. All programs that we used to transform the datasets are available at
+\url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/tree/master/data-processing}.
+
+\subsubsection*{IMDB Dataset}
+The IMDB dataset needed minimal processing. The bulk of the work had already been
+performed by the authors of the dataset. Beyond what had already been done,
+punctuation, symbols and elements of markup were removed, and each document
+concatenated into a file as discussed in the previous section.
+
+\subsubsection*{Wikipedia Dataset}
+The Wikipedia dataset required extensive pre-processing, with each document
+needing to be parsed from the XML, and the plain text extracted from the wiki
+markup. Additionally, ``fake" documents (e.g. portals, category pages) were
+removed. Each wiki page was then tokenized and stored in a file as previously
+stated.
+
+\subsubsection*{Chromium Dataset}
+The Chromium codebase required extensive pre-processing as well, with each \CPP
+file being tokenized and having unicode characters (e.g. ¿) removed.
+Unlike the other two datasets, because punctuation and uppercase/lowercase
+distinctions are semantically significant in code, we retained punctuation and
+the original casing in tokens.
+Each comment and string literal was then tokenized as well, with punctuation
+being removed from these tokens only, and the resulting tokens being stored as
+discussed in the previous section. For an example of this process, the
+document
+\begin{align*}
+&\texttt{// Frobulates the bar, in an efficient manner.}\\
+&\texttt{void Frobulate(Bar \&bar);}\\
+\end{align*}
+would be represented by a line in the file as follows\\
+\begin{align*}
+\texttt{Frobulates the bar in an efficient manner void Frobulate ( Bar \& bar ) ;}
+\end{align*}
+
+\section*{Experimental Procedure}
+
+\subsection*{IMDB Dataset}
+
+\subsection*{Wikipedia Dataset}
+
+\subsection*{Chromium Dataset}
+
+\section*{Results}
+
+\subsection*{IMDB Dataset}
+
+\subsection*{Wikipedia Dataset}
+
+\subsection*{Chromium Dataset}
+
+\section*{Conclusion}
+
+\section*{Future Work}
+
+\printbibliography
+
+\end{document}

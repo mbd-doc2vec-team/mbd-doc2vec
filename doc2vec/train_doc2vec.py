@@ -7,8 +7,8 @@ DOCUMENT_FILE = '/media/zac/ssd-ext/wiki-documents.txt'
 
 SIZE = 200
 WINDOW = 8
-ITERATIONS = 2
-CONCATENATE = 1
+ITERATIONS = 20
+CONCATENATE = 0
 
 docs = TaggedLineDocument(DOCUMENT_FILE)
 
@@ -18,4 +18,4 @@ model = Doc2Vec(documents=docs, size=SIZE, window=WINDOW,
                 dm_concat=CONCATENATE, workers=8)
 print str(datetime.now())
 
-model.save('/media/zac/ssd-ext/saved-model/model')
+model.save('/media/zac/ssd-ext/saved-model-3/model')
