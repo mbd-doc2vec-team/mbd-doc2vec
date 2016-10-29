@@ -106,6 +106,17 @@
   journal={Google Groups}
 }
 
+@article{zhang2010understanding,
+  title={Understanding bag-of-words model: a statistical framework},
+  author={Zhang, Yin and Jin, Rong and Zhou, Zhi-Hua},
+  journal={International Journal of Machine Learning and Cybernetics},
+  volume={1},
+  number={1-4},
+  pages={43--52},
+  year={2010},
+  publisher={Springer}
+}
+
 \end{filecontents}
 \addbibresource{final-report-references.bib}
 
@@ -131,18 +142,36 @@
 \newpage
 
 \section*{Introduction}
-
+We live in a world where enormous amounts of textual data exists, and even more
+is generated each day. This data presents both a major opportunity and major
+challenges, being plentiful and rich in information, but also high dimensional
+and loosely structured. We can view text as consisting of words, and can
+describe any collection of words as a document. In the past, textual documents
+are frequently viewed as just a collection of words, the so-called
+``Bag of Words" model~\cite{zhang2010understanding}. Each word in such a model
+is typically just a number - the semantic connotations of words and documents
+discarded for the sake of efficiency.\\
+In 2013, Mikolov \etal presented the \texttt{word2vec} algorithm
+~\cite{mikolov2013efficient}. This approach allowed for each word to be
+represented by a vector that contains a compact representation of the
+semantic meaning of that word. In 2014, Le and Mikolov extended this
+approach~\cite{le2014distributed} with the \texttt{doc2vec} algorithm to
+allow learning vectors that summarize the semantic meaning of a document.\\
+We seek to extend Le and Mikolov's work, reproducing their \texttt{doc2vec}
+results and further extending them to the domains of document similarity and
+understanding source code.
 
 \subsection*{Contributions}
 This work makes the following contributions:
 \begin{itemize}
   \item Replication of a relatively recent paper~\cite{le2014distributed}
-        that makes some contested claims~\cite{googlegroups2015}.
+        that makes some contentious claims~\cite{googlegroups2015}.
   \item Comparison of \texttt{doc2vec}'s suitability as a document similarity
-        measure as compared to Jaccard distance.
+        measure as compared to Jaccard similarity.
   \item Application of the \texttt{doc2vec} algorithm to a novel domain --
         source code.
 \end{itemize}
+
 
 \section*{Background}
 
@@ -151,6 +180,7 @@ This work makes the following contributions:
 \subsection*{Paragraph Vectors}
 
 \subsection*{Document Similarity}
+
 
 \section*{Data Collection}
 
@@ -241,13 +271,15 @@ would be represented by a line in the file as follows\\
 \texttt{Frobulates the bar in an efficient manner void Frobulate ( Bar \& bar ) ;}
 \end{align*}
 
-\section*{Experimental Procedure}
+
+\section*{Experiments}
 
 \subsection*{IMDB Dataset}
 
 \subsection*{Wikipedia Dataset}
 
 \subsection*{Chromium Dataset}
+
 
 \section*{Results}
 
@@ -257,9 +289,11 @@ would be represented by a line in the file as follows\\
 
 \subsection*{Chromium Dataset}
 
+
 \section*{Conclusion}
 
-\section*{Future Work}
+
+\subsection*{Future Work}
 
 \printbibliography
 
