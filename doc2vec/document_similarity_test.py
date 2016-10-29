@@ -2,7 +2,7 @@
 from gensim.models.doc2vec import Doc2Vec
 from random import random
 
-MODEL_FILE = '/media/zac/ssd-ext/saved-model/model'
+MODEL_FILE = '/media/zac/ssd-ext/saved-model-2/model'
 
 model = Doc2Vec.load(MODEL_FILE, mmap='r')
 
