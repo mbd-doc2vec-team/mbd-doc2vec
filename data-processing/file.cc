@@ -26,6 +26,10 @@ File::File(const char *const filename)
     exit(1);
   }
   size_ = static_cast<size_t>(buf.st_size);
+  if (size_ == 0) {
+    buf_ = nullptr;
+    return;
+  }
   buf_ = static_cast<uint8_t*>(
     mmap(nullptr, size_, PROT_READ, MAP_SHARED, fd_, 0)
   );
@@ -45,7 +49,7 @@ File::~File()
     perror("close");
     exit(1);
   }
-  if (munmap(buf_, size_) == -1) {
+  if (buf_ && munmap(buf_, size_) == -1) {
     perror("munmap");
     exit(1);
   }

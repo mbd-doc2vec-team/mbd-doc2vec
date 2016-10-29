@@ -16,7 +16,7 @@ def plot_embedding(X, y, c, f, sz):
   for i in range(X.shape[0]):
       plt.text(X[i, 0], X[i, 1],
    filter(lambda x: x in printable, y[i]).split('.')[0],
-   color=plt.cm.Set1(c[i]/10.),
+   color=plt.cm.Set1(c[i]/float(max(c))),
                fontdict={'weight': 'bold', 'size': 9})
   plt.savefig(f)
 

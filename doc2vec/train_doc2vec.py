@@ -3,7 +3,7 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedLineDocument
 from datetime import datetime
 
-DOCUMENT_FILE = '/media/zac/ssd-ext/wiki-documents.txt'
+DOCUMENT_FILE = '/media/zac/ssd-ext/chromium-tokens.txt'
 
 SIZE = 200
 WINDOW = 8
@@ -18,4 +18,4 @@ model = Doc2Vec(documents=docs, size=SIZE, window=WINDOW,
                 dm_concat=CONCATENATE, workers=8)
 print str(datetime.now())
 
-model.save('/media/zac/ssd-ext/saved-model-3/model')
+model.save('/media/zac/ssd-ext/chromium-model-1/model')

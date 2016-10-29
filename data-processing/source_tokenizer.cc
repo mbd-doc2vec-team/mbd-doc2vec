@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cctype>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -451,10 +452,12 @@ void PrintTokens(const char *begin, const char *end)
   }
 }
 
-int main()
+int main(int argc, char **argv)
 {
   std::string s;
+  std::ofstream titles(argv[1]);
   while (std::cin >> s) {
+    titles << s << '\n';
     File f(s.c_str());
     const char *buf = (char*)f.buffer();
     std::vector<Token> tokens = LexSource(buf, buf + f.size());
