@@ -19,6 +19,13 @@
 
 \begin{filecontents}{final-report-references.bib}
 
+@article{mikolov2013efficient,
+  title={Efficient estimation of word representations in vector space},
+  author={Mikolov, Tomas and Chen, Kai and Corrado, Greg and Dean, Jeffrey},
+  journal={arXiv preprint arXiv:1301.3781},
+  year={2013}
+}
+
 @inproceedings{le2014distributed,
   title={Distributed Representations of Sentences and Documents.},
   author={Le, Quoc V and Mikolov, Tomas},
@@ -93,6 +100,12 @@
   year={2008}
 }
 
+@misc{googlegroups2015,
+  title={Google Groups},
+  url={https://groups.google.com/d/msg/word2vec-toolkit/q49firnoqro/bp--14e4unwj},
+  journal={Google Groups}
+}
+
 \end{filecontents}
 \addbibresource{final-report-references.bib}
 
@@ -119,7 +132,17 @@
 
 \section*{Introduction}
 
-\section*{Motivation}
+
+\subsection*{Contributions}
+This work makes the following contributions:
+\begin{itemize}
+  \item Replication of a relatively recent paper~\cite{le2014distributed}
+        that makes some contested claims~\cite{googlegroups2015}.
+  \item Comparison of \texttt{doc2vec}'s suitability as a document similarity
+        measure as compared to Jaccard distance.
+  \item Application of the \texttt{doc2vec} algorithm to a novel domain --
+        source code.
+\end{itemize}
 
 \section*{Background}
 
