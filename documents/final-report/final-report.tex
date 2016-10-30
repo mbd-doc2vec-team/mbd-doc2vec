@@ -19,6 +19,14 @@
 
 \begin{filecontents}{final-report-references.bib}
 
+@inproceedings{mikolov2013distributed,
+  title={Distributed representations of words and phrases and their compositionality},
+  author={Mikolov, Tomas and Sutskever, Ilya and Chen, Kai and Corrado, Greg S and Dean, Jeff},
+  booktitle={Advances in neural information processing systems},
+  pages={3111--3119},
+  year={2013}
+}
+
 @article{mikolov2013efficient,
   title={Efficient estimation of word representations in vector space},
   author={Mikolov, Tomas and Chen, Kai and Corrado, Greg and Dean, Jeffrey},
@@ -117,6 +125,26 @@
   publisher={Springer}
 }
 
+@article{rumelhart1988learning,
+  title={Learning representations by back-propagating errors},
+  author={Rumelhart, David E and Hinton, Geoffrey E and Williams, Ronald J},
+  journal={Cognitive modeling},
+  volume={5},
+  number={3},
+  pages={1},
+  year={1988}
+}
+
+@article{bengio2003neural,
+  title={A neural probabilistic language model},
+  author={Bengio, Yoshua and Ducharme, R{\'e}jean and Vincent, Pascal and Jauvin, Christian},
+  journal={journal of machine learning research},
+  volume={3},
+  number={Feb},
+  pages={1137--1155},
+  year={2003}
+}
+
 \end{filecontents}
 \addbibresource{final-report-references.bib}
 
@@ -176,8 +204,23 @@ This work makes the following contributions:
 \section*{Background}
 
 \subsection*{Word Vectors}
+The first meaningful attempt at learning vector representations was
+Rumelhart \etal's 1986 contribution~\cite{rumelhart1988learning}. This work,
+while relatively primitive, paved the way for more sophisticated models, such
+as Bengio \etal's 2003 work~\cite{bengio2003neural}. This work presents a model
+that is extremely similar to the current state of the art: Learn vectors for
+words based on errors seen while trying to predict surrounding context.\\
+Mikolov \etal present various enhancements to this technique
+~\cite{mikolov2013distributed, mikolov2013efficient}, improving both the speed
+of training the word vectors and the quality of the learned representations.
+The algorithm presented in these papers is known as \texttt{word2vec}.
+Mikolov \etal show that these learnt word vectors not only retain semantic
+information, but also relational information; for example, the result of
+$\text{vec(king)} - \text{vec(man)} + \text{vec(woman)} \approx
+\text{vec(queen)}$.
 
 \subsection*{Paragraph Vectors}
+
 
 \subsection*{Document Similarity}
 
