@@ -356,15 +356,60 @@ The experimentation was undertaken with the method as follows.
 
 \subsection*{IMDB Dataset}
 
-
 Through experimentation and switching from a neural network based approach to a logistic regression, the final best accuracy achieved whilst attempting to replicate the results was 89.4\%.
 
 Being unable to replicate the results of Le and Mikolov in \cite{le2014distributed}, some research into the discussion was conducted. Many others were trying their hardest to replicate these results, but ultimately the co-author Mikolov, who was not involved in the experimentation found the issue. This was reported in~\cite{mesnil2014ensemble}, where Mikolov states the 92.6\% accuracy is achievable using hierarchical softmax ``only when the training and test data are not shuffled. Thus, we consider this result to be invalid''. 
 
 \subsection*{Wikipedia Dataset}
 
+Experimentation with the Wikipedia dataset reveals some remarkable semantic connections. Table~\ref{tab:xkcd} shows articles with semantic contexts that most closely resemble the article describing the \emph{XKCD} webcomic. For example, Randal Munroe is the author of the \emph{XKCD} webcomic, while \emph{MS Paint Adventures}, \emph{Penny Arcade} and \emph{Ctrl+Alt+Del} are all webcomics too.
+
+\begin{table*}[h]
+  \begin{center}
+    \begin{tabular}{l l}
+      Page name & Cosine similarity\\
+      \hline
+      randall munroe & 0.517820239067\\
+      ms paint adventures & 0.443829506636\\
+      time (xkcd)  & 0.440876543522\\
+      penny arcade & 0.424748897552\\
+      alexey pajitnov & 0.424251556396\\
+      ctrl+alt+del (webcomic)  & 0.423852056265\\
+    \end{tabular}
+  \caption{Wikipedia pages most similar to \emph{XKCD}}
+  \label{tab:xkcd}
+  \end{center}
+\end{table*}
+
+A feature of representing the embedding in a vector, is being able to find A in the relationship ``X is to Y, as A is to B'' by summing the vectors for X and B, and subtracting Y.
+A simple example of how this works is as follows for
+``Bigger is to Big, as \underline{\hspace{30pt}} is to Large''
+\begin{verbatim}
+>>> model.most_similar([model['large'] + model['bigger'] - model['big']])
+[(u'larger', 0.7768259048461914)
+\end{verbatim}
+
+\emph{Citizen Kane} is a film widely and highly regarded by critics, and as such it has become a part of popular culture to ask the question: ``What compares to the critical acclaim of \emph{Citizen Kane} in other types of entertainment?''. To explore the Wikipedia model's embedding of semantics, the model was applied to answer the question, "What is the \emph{Citizen Kane} of video games?", a question widely debated on the internet.
+
+\begin{verbatim}
+>>> model.docvecs.most_similar([citizen_kane, video_game], [film])]
+[('chrono_trigger', 0.5553357601165771),
+ ('day_of_the_tentacle', 0.5282092094421387),
+ ('deus_ex', 0.5077250599861145),
+ ('kid_icarus', 0.506332516670227),
+ ("sid_meier's_alpha_centauri", 0.5028576850891113),
+ ('cyberspace', 0.49190062284469604),
+ ('chrono_cross', 0.4834246337413788),
+ ('industrial_and_organizational_psychology', 0.4763486087322235),
+ ('diablo_ii', 0.4696195721626282),
+ ('content-control_software', 0.46697914600372314)]
+\end{verbatim}
+
+`Cyberspace', `Industrial and Organizational Psychology' and `Content-Control Software' are examples of results that have semantic similarities between \emph{Citizen Kane} and video games but are not video games titles. This method is not a flawless way of generating human-comprehensible relationships.
+
 \subsection*{Chromium Dataset}
 
+The final application of this document vector model was to investigate the semantic relationships it gathers when applied to source code files. The results were mixed. Examples of clusters included platform-specific implementations and their header files, memory allocation headers from the likes of Webkit and SQLite, GUI components from Webkit and third-party libraries and various message dispatchers. Otherwise, there aren't a lot of relations that can be seen in the overall distribution.
 
 \section*{Conclusion}
 
