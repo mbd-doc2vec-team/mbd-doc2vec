@@ -6,6 +6,7 @@
 \usepackage{epsfig}
 \usepackage{graphicx}
 \usepackage[most]{tcolorbox}
+\usepackage[export]{adjustbox}
 \geometry{a4paper}
 \geometry{margin=1in}
 
@@ -18,6 +19,13 @@
 {C\nolinebreak[4]\hspace{-.05em}\raisebox{.22ex}{\footnotesize\bf ++\ }}
 
 \begin{filecontents}{final-report-references.bib}
+
+@article{lau2016empirical,
+  title={An Empirical Evaluation of doc2vec with Practical Insights into Document Embedding Generation},
+  author={Lau, Jey Han and Baldwin, Timothy},
+  journal={arXiv preprint arXiv:1607.05368},
+  year={2016}
+}
 
 @inproceedings{mikolov2013distributed,
   title={Distributed representations of words and phrases and their compositionality},
@@ -84,6 +92,13 @@
   title={Git repositories on chromium},
   url={https://chromium.googlesource.com/},
   journal={chromium Git repositories}
+}
+
+@article{dai2015document,
+  title={Document embedding with paragraph vectors},
+  author={Dai, Andrew M and Olah, Christopher and Le, Quoc V},
+  journal={arXiv preprint arXiv:1507.07998},
+  year={2015}
 }
 
 @InProceedings{maas2011,
@@ -220,17 +235,50 @@ words based on errors seen while trying to predict surrounding context.\\
 Mikolov \etal present various enhancements to this technique
 ~\cite{mikolov2013distributed, mikolov2013efficient}, improving both the speed
 of training the word vectors and the quality of the learned representations.
-The algorithm presented in these papers is known as \texttt{word2vec}.
+The algorithm presented in these papers is known as \texttt{word2vec}, and works
+as follows (see also Figure~\ref{fig:cbow}):
+\begin{enumerate}
+  \item First, a set of sequential words is taken, and the central word set
+        aside.
+  \item This text is then projected into the vector space, and summed.
+  \item The resulting vector is then used to predict the central word.
+  \item The error in the prediction is backpropagated to refine both the
+        estimates of the word vectors and the prediction network.
+\end{enumerate}
+\begin{figure}
+  \centering\tcbox[nobeforeafter,minipage,width=0.45\linewidth]{
+    \includegraphics[width=\linewidth,left]{cbow.png}
+  }
+  \centering\tcbox[nobeforeafter,minipage,width=0.45\linewidth]{
+    \includegraphics[width=\linewidth,right]{pbow.png}
+  }
+  \caption{Graphical representation of the ~\texttt{word2vec} (left)
+           and ~\texttt{doc2vec} (right) algorithms.}
+  \label{fig:cbow}
+\end{figure}
 Mikolov \etal show that these learnt word vectors not only retain semantic
 information, but also relational information; for example, the result of
 $\text{vec(king)} - \text{vec(man)} + \text{vec(woman)} \approx
 \text{vec(queen)}$.
 
 \subsection*{Paragraph Vectors}
-
-
-\subsection*{Document Similarity}
-
+In 2014, Le and Mikolov presented a method of altering the \texttt{word2vec}
+algorithm to jointly train vector representations of documents in addition
+to word vectors~\cite{le2014distributed}. This method is based on the idea of
+basically adding a ``context vector", representing an individual document, to
+each optimization. The process of learning these document vectors is equivalent
+to that of learning word vectors in the \texttt{word2vec} algorithm, except an
+additional paragraph vector (representing the document a given text sample comes
+from) is added - see Figure~\ref{fig:cbow} for a graphical representation of the
+difference. This modified \texttt{word2vec} algorithm is called
+\texttt{doc2vec}.\\
+Further exploration by Lau \etal shows that the \texttt{doc2vec} algorithm
+provides many of the same interesting properties that \texttt{word2vec} can
+provide~\cite{lau2016empirical}. Not only do the document vectors capture
+semantic information, they \textit{also} capture relations: famous singers
+are located in similar places, and using document vectors trained on wikipedia
+pages, ``Lady Gaga" - ``America" + ``Japan" is closest to ``Ayumi Hamasaki",
+a famous Japanese singer~\cite{dai2015document}.
 
 \section*{Data Collection}
 
@@ -323,29 +371,40 @@ would be represented by a line in the file as follows\\
 
 
 \section*{Experiments}
+Following are details as to how we carried out our experiments.
+Full source code to do this can be found at
+\url{https://github.com/mbd-doc2vec-team/mbd-doc2vec}, and full datasets
+can be obtained as listed in the ``Data Sources" section of this paper.
 
 \subsection*{IMDB Dataset}
-The experimentation was undertaken with the method as follows. 
+The experimentation was undertaken with the method as follows.
 
 \renewcommand\labelitemi{{\boldmath$\cdot$}}
 \begin{description}
   \item Preprocessing
     \begin{itemize}
-      \item The entire set of 100,000 documents were processed as described in the previous sections.
-      The reason for concatenating all documents into a single file is that the dataset is small and can comfortably fit within memory, so it does not suffer from this simplification.
+      \item The entire set of 100,000 documents were processed as described
+            in the previous sections.
+            The reason for concatenating all documents into a single file
+            is that the dataset is small and can comfortably fit within memory,
+            so it does not suffer from this simplification.
     \end{itemize}
   \item Training
     \begin{itemize}
-      \item The co-author, Mikolov, provided some guidance and recommened the use of gensim's skip-gram model, which is trained for 20 iterations on the entire corpus of reviews.
-      \item After each iteration, the order of the documents is randomised.
+      \item One of the co-authors of the original paper, Mikolov, provided
+            some guidance and recommended the use of gensim's skip-gram model,
+            which is trained for 20 iterations on the entire corpus of reviews.
+      \item After each iteration, the order of the documents is randomized.
     \end{itemize}
   \item Evaluation
     \begin{itemize}
-      \item The training document vectors are paired with their labels and a logistic regression is calculated to fit.
-      \item Prediction of sentiment using the testing document vectors takes place and the accuracy of the prediction versus the actual labels is reported.
+      \item The training document vectors are paired with their labels and
+            a logistic regression is calculated to fit the training data.
+      \item Prediction of sentiment using the testing document vectors takes
+            place and the accuracy of the prediction versus the actual labels
+            is reported.
     \end{itemize}
 \end{description}
-
 
 \subsection*{Wikipedia Dataset}
 
@@ -355,11 +414,19 @@ The experimentation was undertaken with the method as follows.
 \section*{Results}
 
 \subsection*{IMDB Dataset}
-
-
-Through experimentation and switching from a neural network based approach to a logistic regression, the final best accuracy achieved whilst attempting to replicate the results was 89.4\%.
-
-Being unable to replicate the results of Le and Mikolov in \cite{le2014distributed}, some research into the discussion was conducted. Many others were trying their hardest to replicate these results, but ultimately the co-author Mikolov, who was not involved in the experimentation found the issue. This was reported in~\cite{mesnil2014ensemble}, where Mikolov states the 92.6\% accuracy is achievable using hierarchical softmax ``only when the training and test data are not shuffled. Thus, we consider this result to be invalid''. 
+Through experimentation and switching from a neural network
+based approach to a logistic regression, the final best accuracy
+achieved whilst attempting to replicate the results was 89.4\%.\\
+Being unable to replicate the results of Le and Mikolov in
+\cite{le2014distributed}, some research into the result was
+conducted. Many others were trying their hardest to replicate these
+results, but ultimately the co-author Mikolov, who was not involved
+in the experimentation found the issue.\\
+This was reported in~\cite{mesnil2014ensemble}, where Mikolov
+states the 92.6\% accuracy is achievable using hierarchical softmax
+``only when the training and test data are not shuffled. Thus, we
+consider this result to be invalid''. We therefore confirm this
+non-replication.
 
 \subsection*{Wikipedia Dataset}
 
