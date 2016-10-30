@@ -1,0 +1,86 @@
+James: I'm James
+
+Zac: I'm Zac
+
+James: We'll be presenting our project on extending paragraph vectors to explore how they can be used to better understand source code.
+
+Zac: First let's cover what a paragraph vector is.
+Zac: Paragraph vectors are an extension to word vectors. Word vectors are embeddings which associate words with a vector typically of dimensions in the hundreds.
+
+:[Show example of ("apple": 0.8892, 0.5236, 0.1293, ...)]
+James: This is an example of a word vector. Two word vectors with a close Euclidean distance to each other are considered more closely related in meaning.
+
+:[Reveal example of ("pear": 0.8892, 0.5236, 0.0924, ...)]
+James: Paragraph vectors are related in the same way, except instead of relating words to each other, larger pieces of text are embedded.
+
+Zac: In 2014, Le and Mikolov presented a paper using paragraph vectors to carry out sentiment analysis on 100,000 film reviews from the Internet Movie Database.
+:[Show IMDB logo, states on reviews/words/etc.]
+Zac: The paper claims a 92% accuracy at predicting positive and negative reviews based on the wording.
+
+James: Relatively speaking, this far outperforms state-of-the-art methods such as Bag of Words.
+James: This drew some attention to the paper, other authors wanting to replicate the results for themselves.
+
+Zac: We attempted to replicate the results, and came close, but ultimately failed to achieve such low error rates.
+
+James: With some research into the discussion around the paper, we found that the co-author had declared the results invalid.
+
+Zac: But this doesn't mean document vectors don't have their uses.
+
+:[Show wikipedia logo, stats on pages/words/etc.]
+James: We decided that we should apply them to other corpora, like the entirety of Wikipedia to see how it captures semantic meaning there.
+
+Zac: Because vectors have little human-comprehensible meaning, we used t-distributed stochastic neighbour embedding ("t-SNE") to aid in visualisation.
+:[Show label at top "t-SNE"]
+Zac: What we found is that document vectors work pretty well given a corpus as large as Wikipedia.
+:[Put some visualisations on the screen, animate that shit, whatever]
+
+:[Show mining/science comparison]
+James: This is an example of mining articles in red, versus science articles in blue. Articles relating to both, such as "School of Geological Sciences" appear in the intersection of both clusters.
+
+Zac: How useful is this semantic clustering when we instead choose a novel corpus of C++ code?
+:[Show Chromium logo, stats on file count/C++ file count]
+Zac: We chose to investigate this with Chromium and found some interesting results.
+
+:[Show]
+:
+:skia/ext/platform_device_win.cc: 1.000000
+:skia/ext/platform_device_linux.cc: 0.763477
+:skia/ext/platform_device_mac.cc: 0.665212
+:skia/ext/platform_device.h: 0.545215
+:
+James: Files that showed some clustering included: platform implementations and their header,
+
+:[Reveal]
+:
+:third_party/WebKit/Source/wtf/allocator/PageAllocator.h: 1.000000
+:third_party/WebKit/Source/wtf/allocator/PartitionAlloc.h: 0.458686
+:third_party/WebKit/Source/platform/heap/HeapPage.h: 0.452050
+:mojo/edk/embedder/configuration.h: 0.392668
+:third_party/sqlite/sqlite-src-3080704/src/pcache.h: 0.385734
+:third_party/tcmalloc/chromium/src/tests/system-alloc_unittest.cc: 0.384425
+:third_party/sqlite/src/src/pcache.h: 0.370084
+:third_party/tcmalloc/vendor/src/gperftools/malloc_extension.h: 0.366230
+:third_party/tcmalloc/chromium/src/system-alloc.cc: 0.364939
+:third_party/tcmalloc/vendor/src/system-alloc.h: 0.363494
+:
+James: and memory allocation headers from the likes of Webkit and SQLite.
+
+:[Show Jaccard v doc2vec plot]
+James: Document vectors embed semantic similarity, not just content similarity. When compared to Jaccard similarity, contexts with often-repeated tokens, like source code, show better semantic separation with document vectors.
+
+Zac: Word vectors also show intuitive relationships.
+
+:[Show]
+:
+:[(u'x', 1.0000000000000000), (u'y', 0.8927178382873535), (u'width', 0.7989175319671631), (u'height', 0.7629488706588745), (u'size', 0.7211754322052002), (u'z', 0.7207148671150208), (u'bottom', 0.7041621208190918), (u'length', 0.7030267715454102), (u'fd', 0.674363374710083), (u'offset', 0.6643631458282471), (u'id', 0.6627857685089111)]
+:
+Zac: Generic variable names show strong relationships,
+:[Reveal]
+:
+:[(u'Windows', 1.0000000000000000), (u'Android', 0.832554817199707), (u'Linux', 0.8091012239456177), (u'Mac', 0.7432607412338257), (u'ChromeOS', 0.7256200313568115), (u'based', 0.6621071696281433), (u'failure', 0.647343635559082), (u'platforms', 0.6435215473175049), (u'both', 0.6414265632629395), (u'OSX', 0.6248048543930054), (u'systems', 0.6182883381843567)]
+:
+Zac: as do distribution platforms.
+
+Zac: Visualisation of document vectors on the other hand, does not work nearly as well as it did with the Wikipedia corpus.
+:[Show a bit of b.png maybe]
+James: While a few tight clusters are shown, they mostly hold no semantic meaning decipherable by any human.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from gensim.models.doc2vec import Doc2Vec, TaggedLineDocument
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from datetime import datetime
 from random import shuffle
 from collections import namedtuple
@@ -8,27 +8,28 @@ from collections import namedtuple
 Document = namedtuple('Document', 'words tags')
 
 
-DOCUMENT_FILE = '/media/zac/ssd-ext/imdb-dataset/documents.txt'
+DOCUMENT_FILE = '/home/jcad/Downloads/aclImdb/alldata.txt'
 
-SIZE = 200
-WINDOW = 8
+SIZE = 100
 ITERATIONS = 20
-CONCATENATE = 0
 
 docs = []
 
 with open(DOCUMENT_FILE) as alldata:
   for line_no, line in enumerate(alldata):
-    words = line.split()
-    tags = [line_no]
-    docs.append(Document(words, tags))
+    docs.append(TaggedDocument(line.split(), [line_no]))
 
-print str(datetime.now())
-model = Doc2Vec(dm=0, size=SIZE, negative=5, hs=0, min_count=2, workers=8)
+training_start_time = datetime.now()
+print "Training started - " + str(training_start_time)
+
+model = Doc2Vec(dm=0, size=SIZE, negative=5, hs=0, min_count=2, workers=4)
 model.build_vocab(docs)
 for i in range(ITERATIONS):
+  epoch_start_time = datetime.now()
   shuffle(docs)
   model.train(docs)
-print str(datetime.now())
+  print("Epoch {}: Completed in {}s".format(i, datetime.now() - epoch_start_time))
 
-model.save('/media/zac/ssd-ext/imdb-model-3/model')
+print "Training complete - Elapsed time: " + str(datetime.now() - training_start_time)
+
+model.save('/home/jcad/Downloads/aclImdb/training-model')

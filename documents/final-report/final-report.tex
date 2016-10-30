@@ -117,6 +117,13 @@
   publisher={Springer}
 }
 
+@article{mesnil2014ensemble,
+  title={Ensemble of generative and discriminative techniques for sentiment analysis of movie reviews},
+  author={Mesnil, Gr{\'e}goire and Mikolov, Tomas and Ranzato, Marc'Aurelio and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:1412.5335},
+  year={2014}
+}
+
 \end{filecontents}
 \addbibresource{final-report-references.bib}
 
@@ -275,6 +282,27 @@ would be represented by a line in the file as follows\\
 \section*{Experiments}
 
 \subsection*{IMDB Dataset}
+The experimentation was undertaken with the method as follows. 
+
+\renewcommand\labelitemi{{\boldmath$\cdot$}}
+\begin{description}
+  \item Preprocessing
+    \begin{itemize}
+      \item The entire set of 100,000 documents were processed as described in the previous sections.
+      The reason for concatenating all documents into a single file is that the dataset is small and can comfortably fit within memory, so it does not suffer from this simplification.
+    \end{itemize}
+  \item Training
+    \begin{itemize}
+      \item The co-author, Mikolov, provided some guidance and recommened the use of gensim's skip-gram model, which is trained for 20 iterations on the entire corpus of reviews.
+      \item After each iteration, the order of the documents is randomised.
+    \end{itemize}
+  \item Evaluation
+    \begin{itemize}
+      \item The training document vectors are paired with their labels and a logistic regression is calculated to fit.
+      \item Prediction of sentiment using the testing document vectors takes place and the accuracy of the prediction versus the actual labels is reported.
+    \end{itemize}
+\end{description}
+
 
 \subsection*{Wikipedia Dataset}
 
@@ -284,6 +312,11 @@ would be represented by a line in the file as follows\\
 \section*{Results}
 
 \subsection*{IMDB Dataset}
+
+
+Through experimentation and switching from a neural network based approach to a logistic regression, the final best accuracy achieved whilst attempting to replicate the results was 89.4\%.
+
+Being unable to replicate the results of Le and Mikolov in \cite{le2014distributed}, some research into the discussion was conducted. Many others were trying their hardest to replicate these results, but ultimately the co-author Mikolov, who was not involved in the experimentation found the issue. This was reported in~\cite{mesnil2014ensemble}, where Mikolov states the 92.6\% accuracy is achievable using hierarchical softmax ``only when the training and test data are not shuffled. Thus, we consider this result to be invalid''. 
 
 \subsection*{Wikipedia Dataset}
 
