@@ -8,7 +8,7 @@
 \usepackage[most]{tcolorbox}
 \usepackage[export]{adjustbox}
 \geometry{a4paper}
-\geometry{margin=0.65in}
+\geometry{margin=0.55in}
 
 \usepackage[sorting=none, backend=bibtex]{biblatex}
 \usepackage{filecontents}
@@ -197,7 +197,7 @@ is generated each day. This data presents both a major opportunity and major
 challenges, being plentiful and rich in information, but also high dimensional
 and loosely structured. We can view text as consisting of words, and can
 describe any collection of words as a document. In the past, textual documents
-are frequently viewed as just a collection of words, the so-called
+were frequently viewed as just a collection of words, the so-called
 ``Bag of Words" model~\cite{zhang2010understanding}. Each word in such a model
 is typically just a number - the semantic connotations of words and documents
 discarded for the sake of efficiency.\\
@@ -233,7 +233,7 @@ as Bengio \etal's 2003 work~\cite{bengio2003neural}. This work presents a model
 that is extremely similar to the current state of the art: Learn vectors for
 words based on errors seen while trying to predict surrounding context.\\
 Mikolov \etal present various enhancements to this technique
-~\cite{mikolov2013distributed, mikolov2013efficient}, improving both the speed
+~\cite{mikolov2013efficient, mikolov2013distributed}, improving both the speed
 of training the word vectors and the quality of the learned representations.
 The algorithm presented in these papers is known as \texttt{word2vec}, and works
 as follows (see also Figure~\ref{fig:cbow}):
@@ -276,7 +276,7 @@ Further exploration by Lau \etal shows that the \texttt{doc2vec} algorithm
 provides many of the same interesting properties that \texttt{word2vec} can
 provide~\cite{lau2016empirical}. Not only do the document vectors capture
 semantic information, they \textit{also} capture relations: famous singers
-are located in similar places, and using document vectors trained on wikipedia
+have similar vectors, and using document vectors trained on wikipedia
 pages, ``Lady Gaga" - ``America" + ``Japan" is closest to ``Ayumi Hamasaki",
 a famous Japanese singer~\cite{dai2015document}.
 
@@ -400,8 +400,8 @@ can be obtained as listed in the ``Data Sources" section of this paper.
       \item The training document vectors are paired with their labels and
             a logistic regression is calculated to fit the training data.
       \item Prediction of sentiment using the testing document vectors takes
-            place and the accuracy of the prediction versus the actual labels
-            is reported.
+            place and the accuracy of the predicted labels versus the actual
+            labels is reported.
     \end{itemize}
 \end{description}
 
@@ -418,12 +418,12 @@ can be obtained as listed in the ``Data Sources" section of this paper.
       \item The gensim~\cite{gensim} \texttt{doc2vec} implementation was used
             to train document vectors for Wikipedia as well. We used document
             vectors of dimensionality 200, a window of 8, and summed vectors
-            instead of concatenating them. We removed all words that occured
+            instead of concatenating them. We removed all words that occurred
             less than 8 times for being too rare.
     \end{itemize}
   \item Evaluation
     \begin{itemize}
-      \item We evaluated the quality of the semantic modelling of the
+      \item We evaluated the quality of the semantic modeling of the
             document vectors by qualitatively considering relationships between
             document vectors.
     \end{itemize}
@@ -443,7 +443,7 @@ can be obtained as listed in the ``Data Sources" section of this paper.
             to train document vectors for Chromium. We used document
             vectors of dimensionality 200, a window of 8, and summed vectors
             instead of concatenating them. We removed all tokens that occured
-            less than 8 times for being too rare.
+            less than 8 times for being too rare, much as for the wikipedia dataset.
     \end{itemize}
   \item Evaluation
     \begin{itemize}
@@ -538,10 +538,13 @@ Table~\ref{tab:ckvg}.
 \subsection*{Chromium Dataset}
 The final application of this document vector model was to investigate the
 semantic relationships it gathers when applied to source code files. The
-results were mixed. Major clusters include C-sharp code, autofill code, the
-WebKit rendering engine, and many other, less immediately obvious, clusters,
-as can be seen in Figure~\ref{fig:tsne}.
-\begin{figure}
+results were mixed. Major clusters include C$^\sharp$ code, autofill code and
+the WebKit rendering engine, as can be seen in Figure~\ref{fig:tsne}.
+There are clearly many other clusters, but these were less well defined, and
+frequently had clusters that overlapped due to image size limitations.
+Reprojection into three dimensions might help with this problem, but runs into
+issues when attempting to present the results in a 2-d format, e.g. here.
+\begin{figure}[h]
   \centering
     \includegraphics[width=0.5\linewidth]{chromium-tsne.png}
   \caption{t-SNE representation of the Chromium codebase under a
@@ -602,8 +605,10 @@ In this paper, we have examined the \texttt{doc2vec} algorithm.
 We find that
 \begin{itemize}
   \item Some of the claims made by Le and Mikolov
-        in~\cite{le2014distributed} are inaccurate, and reflect invalid
-        experimental procedure as opposed to the actual performance.
+        in~\cite{le2014distributed}, specifically regarding accuracy
+        achieved on the sentiment analysis tasks, are inaccurate, and
+        reflect invalid experimental procedure as opposed to the actual
+        performance of the \texttt{doc2vec} algorithm.
   \item The \emph{Citizen Kane} of video games is \emph{Chrono Trigger}.
   \item \texttt{doc2vec} with cosine similarity significantly improves
         upon Jaccard similarity in terms of evaluating the actual semantic
@@ -625,7 +630,7 @@ We identify several major directions for future work:
         successfully be augmented with a \texttt{doc2vec} based method to
         validate similar documents based on semantic similarity.
   \item Investigating whether combined corpora, e.g. training on a codebase
-        and english language text, or on multiple different languages
+        and English language text, or on multiple different languages
         simultaneously, can lead to a general-purpose model that handles
         different categories of input.
 \end{itemize}
