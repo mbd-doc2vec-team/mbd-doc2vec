@@ -16,7 +16,6 @@ def plot_embedding(X, y, c, f, sz):
   for i in range(X.shape[0]):
       plt.text(X[i, 0], X[i, 1],
    filter(lambda x: x in printable, y[i]).split('.')[0],
-   color=plt.cm.Set1(c[i]/float(max(c))),
                fontdict={'weight': 'bold', 'size': 9})
   plt.savefig(f)
 
@@ -37,7 +36,7 @@ def FullPlot(categories, f, sz):
   X_tsne = tsne.fit_transform(np.vstack(X))
   plot_embedding(X_tsne, y, c, f, sz)
 
-MODEL_FILE = '/media/zac/ssd-ext/saved-model-2/model'
+MODEL_FILE = '/media/zac/ssd-ext/saved-model-3/model'
 
 LABEL_FILE = '/media/zac/ssd-ext/document-labels.txt'
 
@@ -49,4 +48,4 @@ with open(LABEL_FILE) as f:
 
 tsne = manifold.TSNE(n_components=2, init='pca', random_state=0)
 
-FullPlot(['anime', 'manga', 'cartoon', 'comic'], '/tmp/a.png', (40,40))
+FullPlot(['science'], '/tmp/a.png', (150,150))

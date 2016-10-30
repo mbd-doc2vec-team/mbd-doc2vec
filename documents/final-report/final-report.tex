@@ -8,7 +8,7 @@
 \usepackage[most]{tcolorbox}
 \usepackage[export]{adjustbox}
 \geometry{a4paper}
-\geometry{margin=1in}
+\geometry{margin=0.65in}
 
 \usepackage[sorting=none, backend=bibtex]{biblatex}
 \usepackage{filecontents}
@@ -216,15 +216,15 @@ This work makes the following contributions:
 \begin{itemize}
   \item Replication of a relatively recent paper~\cite{le2014distributed}
         that makes some contentious claims~\cite{googlegroups2015}.
+  \item Answers the age-old question of what the \emph{Citizen Kane} of
+        video games is.
   \item Comparison of \texttt{doc2vec}'s suitability as a document similarity
         measure as compared to Jaccard similarity.
   \item Application of the \texttt{doc2vec} algorithm to a novel domain --
         source code.
 \end{itemize}
 
-
 \section*{Background}
-
 \subsection*{Word Vectors}
 The first meaningful attempt at learning vector representations was
 Rumelhart \etal's 1986 contribution~\cite{rumelhart1988learning}. This work,
@@ -377,24 +377,23 @@ Full source code to do this can be found at
 can be obtained as listed in the ``Data Sources" section of this paper.
 
 \subsection*{IMDB Dataset}
-The experimentation was undertaken with the method as follows.
-
+\let\oldlabelitemi=\labelitemi
 \renewcommand\labelitemi{{\boldmath$\cdot$}}
 \begin{description}
   \item Preprocessing
     \begin{itemize}
       \item The entire set of 100,000 documents were processed as described
-            in the previous sections.
-            The reason for concatenating all documents into a single file
-            is that the dataset is small and can comfortably fit within memory,
-            so it does not suffer from this simplification.
+            in the previous sections, using the imdb\_cleaner.sh and filecat.sh
+            scripts available at \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/blob/master/data-processing/}
     \end{itemize}
   \item Training
     \begin{itemize}
       \item One of the co-authors of the original paper, Mikolov, provided
-            some guidance and recommended the use of gensim's skip-gram model,
-            which is trained for 20 iterations on the entire corpus of reviews.
+            some guidance and recommended the use of gensim's skip-gram model
+            ~\cite{gensim}, which is trained for 20 iterations on the entire
+            corpus of reviews.
       \item After each iteration, the order of the documents is randomized.
+      \item The parameters we used are available at \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/blob/master/doc2vec/train_imdb_embedder.py}.
     \end{itemize}
   \item Evaluation
     \begin{itemize}
@@ -407,14 +406,62 @@ The experimentation was undertaken with the method as follows.
 \end{description}
 
 \subsection*{Wikipedia Dataset}
+\begin{description}
+  \item Preprocessing
+    \begin{itemize}
+      \item The Wikipedia XML dump was processed as discussed in the Data
+            Processing section, using the parsing program available at
+            \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/blob/master/data-processing/wiki_parser.cc}.
+    \end{itemize}
+  \item Training
+    \begin{itemize}
+      \item The gensim~\cite{gensim} \texttt{doc2vec} implementation was used
+            to train document vectors for Wikipedia as well. We used document
+            vectors of dimensionality 200, a window of 8, and summed vectors
+            instead of concatenating them. We removed all words that occured
+            less than 8 times for being too rare.
+    \end{itemize}
+  \item Evaluation
+    \begin{itemize}
+      \item We evaluated the quality of the semantic modelling of the
+            document vectors by qualitatively considering relationships between
+            document vectors.
+    \end{itemize}
+\end{description}
 
 \subsection*{Chromium Dataset}
+\begin{description}
+  \item Preprocessing
+    \begin{itemize}
+      \item The entire chromium repository was processed as described in
+            the previous section, using the parsing program available at
+            \url{https://github.com/mbd-doc2vec-team/mbd-doc2vec/blob/master/data-processing/source_tokenizer.cc}.
+    \end{itemize}
+  \item Training
+    \begin{itemize}
+      \item The gensim~\cite{gensim} \texttt{doc2vec} implementation was used
+            to train document vectors for Chromium. We used document
+            vectors of dimensionality 200, a window of 8, and summed vectors
+            instead of concatenating them. We removed all tokens that occured
+            less than 8 times for being too rare.
+    \end{itemize}
+  \item Evaluation
+    \begin{itemize}
+      \item To evaluate \texttt{doc2vec} on source code, we first investigated
+            how well \texttt{doc2vec}'s learned document vectors performed in
+            finding clusters of related source files.
+      \item Secondly, we evaluated the learned word vectors performed on tokens
+            in source, to see if the semantic relationships found made sense in
+            the context of the codebase.
+      \item Finally, we compared the quality of the similarity
+            metric given by the cosine distance of adjacent document vectors.
+            We compare and contrast it with the Jaccard Similarity coefficient.
+    \end{itemize}
+\end{description}
 
-
+\renewcommand\labelitemi{\oldlabelitemi}
 \section*{Results}
-
 \subsection*{IMDB Dataset}
-
 Through experimentation and switching from a neural network
 based approach to a logistic regression, the final best accuracy
 achieved whilst attempting to replicate the results was 89.4\%.\\
@@ -430,60 +477,158 @@ consider this result to be invalid''. We therefore confirm this
 non-replication.
 
 \subsection*{Wikipedia Dataset}
-
-Experimentation with the Wikipedia dataset reveals some remarkable semantic connections. Table~\ref{tab:xkcd} shows articles with semantic contexts that most closely resemble the article describing the \emph{XKCD} webcomic. For example, Randal Munroe is the author of the \emph{XKCD} webcomic, while \emph{MS Paint Adventures}, \emph{Penny Arcade} and \emph{Ctrl+Alt+Del} are all webcomics too.
-
+Experimentation with the Wikipedia dataset reveals some remarkable
+semantic connections. Table~\ref{tab:ladygaga} shows articles with semantic
+contexts that most closely resemble the article describing \emph{Lady Gaga}.
+Each of these pages is that of another famous singer.
 \begin{table*}[h]
   \begin{center}
     \begin{tabular}{l l}
       Page name & Cosine similarity\\
       \hline
-      randall munroe & 0.517820239067\\
-      ms paint adventures & 0.443829506636\\
-      time (xkcd)  & 0.440876543522\\
-      penny arcade & 0.424748897552\\
-      alexey pajitnov & 0.424251556396\\
-      ctrl+alt+del (webcomic)  & 0.423852056265\\
+      lorde & 0.578353\\
+      lana del rey & 0.574220\\
+      nicki minaj & 0.571770\\
+      kreesha turner & 0.568376\\
+      katy perry & 0.557113\\
     \end{tabular}
-  \caption{Wikipedia pages most similar to \emph{XKCD}}
-  \label{tab:xkcd}
+  \caption{Wikipedia pages most similar to \emph{Lady Gaga}}
+  \label{tab:ladygaga}
   \end{center}
 \end{table*}
-
-A feature of representing the embedding in a vector, is being able to find A in the relationship ``X is to Y, as A is to B'' by summing the vectors for X and B, and subtracting Y.
-A simple example of how this works is as follows for
-``Bigger is to Big, as \underline{\hspace{30pt}} is to Large''
+\\Another nice feature of representing the embedding as a vector is being able to find
+A in the relationship ``X is to Y, as A is to B'' by summing the vectors for X
+and B, and subtracting Y.
+A simple example of how this works is to query the model for
+``London is to England, as \underline{\hspace{30pt}} is to France''
 \begin{verbatim}
->>> model.most_similar([model['large'] + model['bigger'] - model['big']])
-[(u'larger', 0.7768259048461914)
+>>> model.docvecs.most_similar([london - england + france])
+(u'paris', 0.47777268290519714)
 \end{verbatim}
-
-\emph{Citizen Kane} is a film widely and highly regarded by critics, and as such it has become a part of popular culture to ask the question: ``What compares to the critical acclaim of \emph{Citizen Kane} in other types of entertainment?''. To explore the Wikipedia model's embedding of semantics, the model was applied to answer the question, "What is the \emph{Citizen Kane} of video games?", a question widely debated on the internet.
-
-\begin{verbatim}
->>> model.docvecs.most_similar([citizen_kane, video_game], [film])]
-[('chrono_trigger', 0.5553357601165771),
- ('day_of_the_tentacle', 0.5282092094421387),
- ('deus_ex', 0.5077250599861145),
- ('kid_icarus', 0.506332516670227),
- ("sid_meier's_alpha_centauri", 0.5028576850891113),
- ('cyberspace', 0.49190062284469604),
- ('chrono_cross', 0.4834246337413788),
- ('industrial_and_organizational_psychology', 0.4763486087322235),
- ('diablo_ii', 0.4696195721626282),
- ('content-control_software', 0.46697914600372314)]
-\end{verbatim}
-
-`Cyberspace', `Industrial and Organizational Psychology' and `Content-Control Software' are examples of results that have semantic similarities between \emph{Citizen Kane} and video games but are not video games titles. This method is not a flawless way of generating human-comprehensible relationships.
+That the model can learn such a relationship - without any knowledge of what a
+capital city is explicitly being provided to it - speaks to its representative
+power.\\
+\emph{Citizen Kane} is a film widely and highly regarded by critics, and as such
+it has become a part of popular culture to ask the question:
+``What compares to the critical acclaim of \emph{Citizen Kane}
+in other types of entertainment?''. To explore the Wikipedia model's embedding
+of semantics, the model was applied to answer the question,
+``What is the \emph{Citizen Kane} of video games?", a question widely debated
+on the internet. The results of querying the model are displayed in
+Table~\ref{tab:ckvg}.
+\begin{table*}[h]
+  \begin{center}
+    \begin{tabular}{l l}
+      Page name & Cosine similarity\\
+      \hline
+      chrono trigger & 0.555336\\
+      day of the tentacle & 0.528209\\
+      deus ex & 0.507725\\
+      kid icarus & 0.506333\\
+      sid meier's alpha centauri & 0.502858\\
+    \end{tabular}
+  \caption{Wikipedia pages most similar to
+           \emph{Citizen Kane} $-$ \emph{Film} $+$ \emph{Video Game}}
+  \label{tab:ckvg}
+  \end{center}
+\end{table*}
+\\Each of these games has received critical acclaim, with the ``worst" of them,
+\emph{Kid Icarus}, known for having a dedicated following.\\
 
 \subsection*{Chromium Dataset}
-
-The final application of this document vector model was to investigate the semantic relationships it gathers when applied to source code files. The results were mixed. Examples of clusters included platform-specific implementations and their header files, memory allocation headers from the likes of Webkit and SQLite, GUI components from Webkit and third-party libraries and various message dispatchers. Otherwise, there aren't a lot of relations that can be seen in the overall distribution.
+The final application of this document vector model was to investigate the
+semantic relationships it gathers when applied to source code files. The
+results were mixed. Major clusters include C-sharp code, autofill code, the
+WebKit rendering engine, and many other, less immediately obvious, clusters,
+as can be seen in Figure~\ref{fig:tsne}.
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\linewidth]{chromium-tsne.png}
+  \caption{t-SNE representation of the Chromium codebase under a
+           \texttt{doc2vec} transform.}
+  \label{fig:tsne}
+\end{figure}
+Otherwise, there aren't a lot of relations that can be seen in the overall
+distribution.\\
+Beyond these clusters, it's also interesting to see similarity patterns that
+form in the tokens, as can be seen in Table~\ref{tab:chromium}. It's clear that
+y, width, height, size and z are related to the idea of x as a coordinate.
+\begin{table*}[h]
+  \begin{center}
+    \begin{tabular}{l l}
+      Token & Cosine similarity\\
+      \hline
+      y & 0.892718\\
+      width & 0.798918\\
+      height & 0.762949\\
+      size & 0.721175\\
+      z & 0.720715\\
+    \end{tabular}
+  \caption{Tokens similar to $x$}
+  \label{tab:chromium}
+  \end{center}
+\end{table*}
+\\We then randomly sampled several thousand chromium files and computed the
+Jaccard similarity and cosine similarity for each pair using the document vectors.
+We observed that in every instance where \texttt{doc2vec} based cosine distance
+indicated high semantic similarity, we found the two files to perform a similar
+role. In contrast, frequently files which had a high Jaccard similarity seemed
+quite dissimilar from the perspective of a software engineer. This relationship
+can be seen in Figure~\ref{fig:graph}.
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\linewidth]{js-vs-cosine.png}
+  \caption{Jaccard similarity (x axis) vs Cosine similarity (y axis)}
+  \label{fig:graph}
+\end{figure}
+\\It's clear that Jaccard similarity fails completely to find semantic
+similarities on files with no words in common (see the left side of the graph),
+as well as overestimating semantic similarity in much of the codebase (consider that
+tokens like `+', `for', `while' will appear in almost every file, while a small
+handful of tokens, like comments and variable names, will define much of the
+semantic meaning of a given file).
+The cost of this improved quality of similarity metric lies in the increased
+time expenditure: The Jaccard similarity of a pair of documents can be computed
+in tens or hundreds of microseconds - or even faster using methods like minhash.
+In contrast, \texttt{doc2vec} takes order of 10s of milliseconds to infer a document
+vector for an unseen document. Given that the Jaccard similarity of two documents
+typically seems to serve as a useful upper bound for document similarity, however,
+it might be possible to opportunistically only apply the \texttt{doc2vec} based
+similarity metric to documents that are known to be somewhat similar, and achieve
+both high throughput and better evaluation of semantic similarity.
 
 \section*{Conclusion}
-
+In this paper, we have examined the \texttt{doc2vec} algorithm.
+We find that
+\begin{itemize}
+  \item Some of the claims made by Le and Mikolov
+        in~\cite{le2014distributed} are inaccurate, and reflect invalid
+        experimental procedure as opposed to the actual performance.
+  \item The \emph{Citizen Kane} of video games is \emph{Chrono Trigger}.
+  \item \texttt{doc2vec} with cosine similarity significantly improves
+        upon Jaccard similarity in terms of evaluating the actual semantic
+        similarity of two documents, but uses significantly more computing
+        resources in order to do so.
+  \item \texttt{doc2vec} can be applied to codebases and still produce valid,
+        interesting similarity results.
+\end{itemize}
 
 \subsection*{Future Work}
+We identify several major directions for future work:
+\begin{itemize}
+  \item More formal analysis of the actual speed and quality of
+        \texttt{doc2vec} with cosine similarity is necessary. We suspect
+        that use of a kd-tree might allow it to perform comparably well
+        to minhashing with w-shingles for a sufficiently large set of prior
+        documents.
+  \item Investigating techniques like minhashing to see if they can
+        successfully be augmented with a \texttt{doc2vec} based method to
+        validate similar documents based on semantic similarity.
+  \item Investigating whether combined corpora, e.g. training on a codebase
+        and english language text, or on multiple different languages
+        simultaneously, can lead to a general-purpose model that handles
+        different categories of input.
+\end{itemize}
 
 \printbibliography
 
